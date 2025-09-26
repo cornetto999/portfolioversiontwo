@@ -71,6 +71,7 @@ const Navbar = () => {
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="text-foreground hover:text-primary transition-colors"
+              aria-label="Toggle mobile menu"
             >
               <svg
                 className="h-6 w-6"
