@@ -1,0 +1,186 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Modern Portfolio Design System - Dark theme with neon accents */
+
+@layer base {
+  :root {
+    /* Dark theme base colors */
+    --background: 222 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    /* Glass cards with subtle transparency */
+    --card: 222 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --card-glass: 220 20% 8%;
+
+    --popover: 222 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    /* Neon accent colors */
+    --primary: 217 91% 60%; /* Electric blue */
+    --primary-foreground: 222 84% 4.9%;
+    
+    --secondary: 270 95% 75%; /* Purple */
+    --secondary-foreground: 222 84% 4.9%;
+
+    --tertiary: 315 100% 70%; /* Pink */
+    --tertiary-foreground: 222 84% 4.9%;
+
+    --muted: 215 13.8% 34.1%;
+    --muted-foreground: 217.9 10.6% 64.9%;
+
+    --accent: 217 91% 60%;
+    --accent-foreground: 222 84% 4.9%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 215 13.8% 15.1%;
+    --input: 215 13.8% 15.1%;
+    --ring: 217 91% 60%;
+
+    --radius: 1rem;
+
+    /* Gradient definitions */
+    --gradient-hero: linear-gradient(135deg, hsl(217 91% 60% / 0.1), hsl(270 95% 75% / 0.1), hsl(315 100% 70% / 0.1));
+    --gradient-card: linear-gradient(145deg, hsl(220 20% 8% / 0.6), hsl(220 20% 12% / 0.4));
+    --gradient-border: linear-gradient(90deg, hsl(217 91% 60%), hsl(270 95% 75%), hsl(315 100% 70%));
+    
+    /* Glow effects */
+    --glow-primary: 0 0 30px hsl(217 91% 60% / 0.3);
+    --glow-secondary: 0 0 30px hsl(270 95% 75% / 0.3);
+    --glow-tertiary: 0 0 30px hsl(315 100% 70% / 0.3);
+
+    /* Glassmorphism */
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-blur: blur(10px);
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    /* Dark mode is default - these maintain consistency */
+    --background: 222 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --primary: 217 91% 60%;
+    --secondary: 270 95% 75%;
+    --tertiary: 315 100% 70%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    overflow-x: hidden;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Custom cursor styles */
+@layer utilities {
+  .cursor-magnetic {
+    cursor: none;
+  }
+
+  body {
+    cursor: none;
+  }
+
+  .glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  .gradient-text {
+    background: var(--gradient-border);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .tilt-card {
+    transform-style: preserve-3d;
+    transition: all 0.3s ease;
+  }
+
+  .tilt-card:hover {
+    transform: rotateX(15deg) rotateY(15deg) scale(1.05);
+    box-shadow: var(--glow-primary), 0 25px 50px rgba(0, 0, 0, 0.5);
+  }
+
+  .hero-gradient {
+    background: var(--gradient-hero);
+    background-size: 400% 400%;
+    animation: gradient-shift 8s ease infinite;
+  }
+
+  @keyframes gradient-shift {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  .glow-hover:hover {
+    box-shadow: var(--glow-primary), 0 0 40px hsl(var(--primary) / 0.6);
+    transform: translateY(-3px) scale(1.02);
+  }
+
+  .magnetic-hover {
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .magnetic-hover:hover {
+    transform: translateY(-2px) scale(1.05);
+  }
+
+  .fade-in-up {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .fade-in-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Enhanced particle interactions */
+  #tsparticles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+}
