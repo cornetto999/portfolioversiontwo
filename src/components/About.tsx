@@ -16,6 +16,10 @@ const About = () => {
     { name: 'Python', level: 85, color: '#3776ab' },
     { name: 'UI/UX Design', level: 92, color: '#ff6b6b' },
     { name: 'MySQL', level: 82, color: '#336791' },
+    { name: 'PHP', level: 80, color: '#777bb4' },
+    { name: 'PL/pgSQL', level: 75, color: '#336791' },
+    { name: 'HTML', level: 95, color: '#e34f26' },
+    { name: 'CSS', level: 90, color: '#1572b6' },
   ];
 
   const skills = isLoading || error ? fallbackSkills : languages.map(lang => ({
@@ -87,7 +91,7 @@ const About = () => {
                 className="flex flex-wrap gap-3 mt-6"
                 variants={containerVariants}
               >
-                {['React', 'TypeScript', 'Next.js', 'Python', 'MySQL', 'Tailwind CSS', 'Flutter', 'Figma'].map((tech) => (
+                {['React', 'TypeScript', 'Next.js', 'Python', 'MySQL', 'PHP', 'PL/pgSQL', 'HTML', 'CSS', 'Tailwind CSS', 'Flutter', 'Figma'].map((tech) => (
                   <motion.span
                     key={tech}
                     variants={itemVariants}

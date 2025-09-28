@@ -51,11 +51,15 @@ export const useGitHubStats = (username: string) => {
       if (shouldSkipGitHub()) {
         const fallbackStats = {
           languages: [
-            { name: 'JavaScript', percentage: 35, color: '#f7df1e' },
-            { name: 'TypeScript', percentage: 25, color: '#3178c6' },
-            { name: 'Python', percentage: 20, color: '#3776ab' },
-            { name: 'React', percentage: 15, color: '#61dafb' },
-            { name: 'Node.js', percentage: 5, color: '#339933' },
+            { name: 'JavaScript', percentage: 25, color: '#f7df1e' },
+            { name: 'TypeScript', percentage: 20, color: '#3178c6' },
+            { name: 'Python', percentage: 15, color: '#3776ab' },
+            { name: 'React', percentage: 12, color: '#61dafb' },
+            { name: 'PHP', percentage: 10, color: '#777bb4' },
+            { name: 'PL/pgSQL', percentage: 7, color: '#336791' },
+            { name: 'HTML', percentage: 8, color: '#e34f26' },
+            { name: 'CSS', percentage: 6, color: '#1572b6' },
+            { name: 'Node.js', percentage: 4, color: '#339933' },
           ],
           totalRepos: 12,
           totalStars: 8,
@@ -160,11 +164,15 @@ export const useGitHubStats = (username: string) => {
         // Provide fallback stats when API fails
         const fallbackStats = {
           languages: [
-            { name: 'JavaScript', percentage: 35, color: '#f7df1e' },
-            { name: 'TypeScript', percentage: 25, color: '#3178c6' },
-            { name: 'Python', percentage: 20, color: '#3776ab' },
-            { name: 'React', percentage: 15, color: '#61dafb' },
-            { name: 'Node.js', percentage: 5, color: '#339933' },
+            { name: 'JavaScript', percentage: 25, color: '#f7df1e' },
+            { name: 'TypeScript', percentage: 20, color: '#3178c6' },
+            { name: 'Python', percentage: 15, color: '#3776ab' },
+            { name: 'React', percentage: 12, color: '#61dafb' },
+            { name: 'PHP', percentage: 10, color: '#777bb4' },
+            { name: 'PL/pgSQL', percentage: 7, color: '#336791' },
+            { name: 'HTML', percentage: 8, color: '#e34f26' },
+            { name: 'CSS', percentage: 6, color: '#1572b6' },
+            { name: 'Node.js', percentage: 4, color: '#339933' },
           ],
           totalRepos: 12, // Estimated based on typical portfolio
           totalStars: 8,  // Estimated based on typical portfolio
@@ -226,6 +234,7 @@ const getLanguageColor = (language: string): string => {
     'JSON': '#000000',
     'Markdown': '#083fa1',
     'SQL': '#336791',
+    'PL/pgSQL': '#336791',
     'Assembly': '#6e4c13',
     'MATLAB': '#e16737',
     'Objective-C': '#438eff',
