@@ -45,6 +45,9 @@ const Navbar = () => {
             className="text-xl font-bold gradient-text cursor-pointer"
             whileHover={{ scale: 1.05 }}
             onClick={() => scrollToSection('#home')}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: isScrolled ? 1 : 0 }}
+            transition={{ duration: 0.3 }}
           >
              Francis Jake Roaya
           </motion.div>

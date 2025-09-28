@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
+import { useIsMobile } from '../hooks/use-mobile';
 
 const CustomCursor = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const updateMousePosition = (e: MouseEvent) => {
@@ -36,7 +38,8 @@ const CustomCursor = () => {
     };
   }, []);
 
-  if (!isVisible) return null;
+  // Don't show custom cursor on mobile devices
+  if (isMobile || !isVisible) return null;
 
   return (
     <>
