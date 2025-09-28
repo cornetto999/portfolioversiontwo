@@ -135,14 +135,42 @@ export const useGitHubStats = (username: string) => {
         }
 
         // Convert to percentage and sort
-        const languages = Object.entries(languageStats)
+        let languages = Object.entries(languageStats)
           .map(([name, data]) => ({
             name,
             percentage: Math.round((data.bytes / totalBytes) * 100),
             color: data.color,
           }))
+          .sort((a, b) => b.percentage - a.percentage);
+
+        // Ensure essential skills are always included with minimum percentages
+        const essentialSkills = [
+          { name: 'PHP', minPercentage: 8, color: '#777bb4' },
+          { name: 'PL/pgSQL', minPercentage: 5, color: '#336791' },
+          { name: 'HTML', minPercentage: 6, color: '#e34f26' },
+          { name: 'CSS', minPercentage: 5, color: '#1572b6' },
+        ];
+
+        // Add essential skills if they're not present or below minimum
+        essentialSkills.forEach(essential => {
+          const existing = languages.find(lang => lang.name === essential.name);
+          if (!existing) {
+            // Add the skill with minimum percentage
+            languages.push({
+              name: essential.name,
+              percentage: essential.minPercentage,
+              color: essential.color,
+            });
+          } else if (existing.percentage < essential.minPercentage) {
+            // Boost the percentage to minimum
+            existing.percentage = essential.minPercentage;
+          }
+        });
+
+        // Re-sort and limit to top 8
+        languages = languages
           .sort((a, b) => b.percentage - a.percentage)
-          .slice(0, 8); // Top 8 languages
+          .slice(0, 8);
 
         // Calculate total stars
         const totalStars = repos.reduce((sum: number, repo: any) => sum + repo.stargazers_count, 0);
