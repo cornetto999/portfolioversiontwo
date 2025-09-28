@@ -145,6 +145,8 @@ export const useGitHubStats = (username: string) => {
 
         // Ensure essential skills are always included with minimum percentages
         const essentialSkills = [
+          { name: 'Next.js', minPercentage: 12, color: '#000000' },
+          { name: 'React', minPercentage: 10, color: '#61dafb' },
           { name: 'PHP', minPercentage: 8, color: '#777bb4' },
           { name: 'PL/pgSQL', minPercentage: 5, color: '#336791' },
           { name: 'HTML', minPercentage: 6, color: '#e34f26' },
