@@ -38,8 +38,8 @@ const Projects = () => {
       description: 'Watch without ads, play in PiP. Trending in Philippines.',
       image: project3,
       technologies: ['React', 'Tailwind CSS', 'Google API'],
-      liveUrl: '#',
-      githubUrl: '#',
+      liveUrl: 'https://yt-web-app.vercel.app/',
+      githubUrl: 'https://github.com/cornetto999/yt-web-app',
       featured: false,
     },
   ];
