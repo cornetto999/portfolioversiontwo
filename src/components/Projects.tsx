@@ -6,6 +6,7 @@ import { ExternalLink } from 'lucide-react';
 import project1 from '@/assets/e-boy.png';
 import project2 from '@/assets/who.png';
 import project3 from '@/assets/yt.png';
+import project4 from '@/assets/dtr.png';
 
 const Projects = () => {
   const ref = useRef(null);
@@ -40,6 +41,15 @@ const Projects = () => {
       technologies: ['React', 'Tailwind CSS', 'Google API'],
       liveUrl: 'https://yt-web-app.vercel.app/',
       githubUrl: 'https://github.com/cornetto999/yt-web-app',
+      featured: false,
+    },
+    {
+      id: 4,
+      title: 'DTR Attendance System',
+      description: 'Sign in to track your work hours and achieve your goals',
+      image: project4,
+      technologies: ['Tailwind CSS', 'TypeScript', 'Supabase'],
+      liveUrl: 'https://dtr-jek999.lovable.app',
       featured: false,
     },
   ];
