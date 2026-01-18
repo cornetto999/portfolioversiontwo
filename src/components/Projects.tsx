@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { ExternalLink } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ExternalLink } from 'lucide-react';
 import project1 from '@/assets/e-boy.png';
 import project2 from '@/assets/who.png';
 import project3 from '@/assets/yt.png';
@@ -11,6 +11,8 @@ import project4 from '@/assets/dtr.png';
 const Projects = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
+  const [page, setPage] = useState(0);
+  const projectsPerPage = 3;
 
   const projects = [
     {
@@ -79,6 +81,12 @@ const Projects = () => {
     }
   };
 
+  const totalPages = Math.max(1, Math.ceil(projects.length / projectsPerPage));
+  const currentProjects = projects.slice(
+    page * projectsPerPage,
+    page * projectsPerPage + projectsPerPage
+  );
+
   return (
     <section id="projects" ref={ref} className="py-20 relative overflow-hidden">
       <div className="container mx-auto px-4">
@@ -102,12 +110,12 @@ const Projects = () => {
             technical skills and passion for innovative solutions.
           </motion.p>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {projects.map((project) => (
+          <div className="flex flex-nowrap gap-8 overflow-hidden">
+            {currentProjects.map((project) => (
               <motion.div
                 key={project.id}
                 variants={itemVariants}
-                className="group"
+                className="group w-full min-w-[280px]"
               >
                 <motion.div
                   className={`glass-card rounded-2xl overflow-hidden hover:shadow-glow-primary transition-all duration-500 group-hover:shadow-glow-secondary cursor-pointer ${
@@ -193,14 +201,26 @@ const Projects = () => {
 
           <motion.div
             variants={itemVariants}
-            className="text-center mt-12"
+            className="flex items-center justify-center gap-4 mt-12"
           >
             <Button
               size="lg"
               variant="outline"
               className="border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg rounded-xl magnetic-hover"
+              disabled={page === 0}
+              onClick={() => setPage((p) => Math.max(0, p - 1))}
             >
-              View All Projects
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+
+            <Button
+              size="lg"
+              variant="outline"
+              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg rounded-xl magnetic-hover"
+              disabled={page >= totalPages - 1}
+              onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+            >
+              <ArrowRight className="w-5 h-5" />
             </Button>
           </motion.div>
         </motion.div>
