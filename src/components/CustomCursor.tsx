@@ -45,7 +45,7 @@ const CustomCursor = () => {
     <>
       {/* Main cursor */}
       <div
-        className="fixed top-0 left-0 pointer-events-none z-50 mix-blend-difference"
+        className="portfolio-custom-cursor fixed top-0 left-0 pointer-events-none z-50 mix-blend-difference"
         style={{
           transform: `translate(${mousePosition.x - 10}px, ${mousePosition.y - 10}px)`,
           transition: 'transform 0.1s ease-out',
@@ -60,7 +60,7 @@ const CustomCursor = () => {
       
       {/* Trailing glow effect */}
       <div
-        className="fixed top-0 left-0 pointer-events-none z-40"
+        className="portfolio-custom-cursor fixed top-0 left-0 pointer-events-none z-40"
         style={{
           transform: `translate(${mousePosition.x - 25}px, ${mousePosition.y - 25}px)`,
           transition: 'transform 0.15s ease-out',

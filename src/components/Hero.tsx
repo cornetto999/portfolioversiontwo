@@ -36,6 +36,15 @@ const Hero = () => {
             transition={{ duration: 0.8 }}
             className="flex-1 text-center lg:text-left"
           >
+            <motion.p
+              className="text-sm md:text-base font-medium tracking-[0.25em] text-muted-foreground/80 mb-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.1 }}
+            >
+          
+            </motion.p>
+
             <motion.h1
               className="text-5xl md:text-7xl font-bold mb-6 relative"
               initial={{ opacity: 0, y: 30 }}

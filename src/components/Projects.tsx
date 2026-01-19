@@ -1,12 +1,13 @@
 import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, ExternalLink } from 'lucide-react';
 import project1 from '@/assets/e-boy.png';
 import project2 from '@/assets/who.png';
 import project3 from '@/assets/yt.png';
 import project4 from '@/assets/dtr.png';
+import project5 from '@/assets/luxera.png';
 
 const Projects = () => {
   const ref = useRef(null);
@@ -54,6 +55,15 @@ const Projects = () => {
       liveUrl: 'https://dtr-jek999.lovable.app',
       featured: false,
     },
+    {
+      id: 5,
+      title: 'Luxera',
+      description: 'Discover Your Signature Scent',
+      image: project5,
+      technologies: ['React', 'TypeScript', 'Tailwind CSS', 'Supabase'],
+      liveUrl: 'https://luxera.lovable.app',
+      featured: true,
+    },
   ];
 
   const containerVariants = {
@@ -81,8 +91,16 @@ const Projects = () => {
     }
   };
 
-  const totalPages = Math.max(1, Math.ceil(projects.length / projectsPerPage));
-  const currentProjects = projects.slice(
+  const displayProjects = [...projects].sort(
+    (a, b) => Number(b.featured) - Number(a.featured)
+  );
+  const totalPages = Math.max(1, Math.ceil(displayProjects.length / projectsPerPage));
+
+  useEffect(() => {
+    setPage((p) => Math.min(p, totalPages - 1));
+  }, [totalPages]);
+
+  const currentProjects = displayProjects.slice(
     page * projectsPerPage,
     page * projectsPerPage + projectsPerPage
   );
@@ -110,12 +128,12 @@ const Projects = () => {
             technical skills and passion for innovative solutions.
           </motion.p>
 
-          <div className="flex flex-nowrap gap-8 overflow-hidden">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {currentProjects.map((project) => (
               <motion.div
                 key={project.id}
                 variants={itemVariants}
-                className="group w-full min-w-[280px]"
+                className="group w-full"
               >
                 <motion.div
                   className={`glass-card rounded-2xl overflow-hidden hover:shadow-glow-primary transition-all duration-500 group-hover:shadow-glow-secondary cursor-pointer ${

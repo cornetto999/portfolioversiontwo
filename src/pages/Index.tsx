@@ -4,6 +4,7 @@ import About from '@/components/About';
 import Projects from '@/components/Projects';
 import Contact from '@/components/Contact';
 import CustomCursor from '@/components/CustomCursor';
+import FloatingAvatarBot from '@/components/FloatingAvatarBot';
 
 const Index = () => {
   return (
@@ -14,6 +15,7 @@ const Index = () => {
       <About />
       <Projects />
       <Contact />
+      <FloatingAvatarBot />
     </div>
   );
 };
