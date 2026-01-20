@@ -1,5 +1,9 @@
 import { getPortfolioSystemPrompt } from "../portfolio-knowledge";
 
+export const config = {
+  runtime: "nodejs18.x",
+};
+
 export default async function handler(req: any, res: any) {
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method Not Allowed" });
@@ -62,6 +66,11 @@ export default async function handler(req: any, res: any) {
     const reply = data?.choices?.[0]?.message?.content;
     res.status(200).json({ reply: typeof reply === "string" ? reply : "" });
   } catch (err: any) {
+    console.error("/api/chat invocation failed", {
+      message: err?.message,
+      name: err?.name,
+      stack: err?.stack,
+    });
     res.status(500).json({ error: err?.message || "Unexpected server error" });
   }
 }

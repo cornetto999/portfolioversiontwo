@@ -146,7 +146,7 @@ const FloatingAvatarBot = () => {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="fixed bottom-4 right-4 z-50 pb-[env(safe-area-inset-bottom)] sm:bottom-6 sm:right-6">
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button
@@ -158,11 +158,11 @@ const FloatingAvatarBot = () => {
             <img
               src={robotGif}
               alt="Robot assistant"
-              className="h-40 w-40 object-contain"
+              className="h-24 w-24 object-contain sm:h-40 sm:w-40"
             />
           </Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-md cursor-auto">
+        <DialogContent className="w-[calc(100vw-2rem)] max-w-none cursor-auto sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Portfolio Assistant</DialogTitle>
             <DialogDescription>
@@ -170,7 +170,7 @@ const FloatingAvatarBot = () => {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="flex h-[60vh] flex-col gap-3 cursor-auto">
+          <div className="flex h-[70vh] flex-col gap-3 cursor-auto sm:h-[60vh]">
             <div className="flex-1 overflow-y-auto rounded-lg border bg-muted/10 p-4">
               <div className="flex flex-col gap-3">
                 {messages.map((m) => (
