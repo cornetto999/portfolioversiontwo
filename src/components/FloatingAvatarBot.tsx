@@ -146,7 +146,7 @@ const FloatingAvatarBot = () => {
   };
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 pb-[env(safe-area-inset-bottom)] sm:bottom-6 sm:right-6">
+    <div className="fixed bottom-2 right-2 z-50 pb-[env(safe-area-inset-bottom)] pr-[env(safe-area-inset-right)] sm:bottom-6 sm:right-6">
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button
@@ -158,7 +158,7 @@ const FloatingAvatarBot = () => {
             <img
               src={robotGif}
               alt="Robot assistant"
-              className="h-24 w-24 object-contain sm:h-40 sm:w-40"
+              className="h-16 w-16 object-contain sm:h-40 sm:w-40"
             />
           </Button>
         </DialogTrigger>

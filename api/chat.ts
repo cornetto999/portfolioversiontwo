@@ -1,4 +1,4 @@
-import { getPortfolioSystemPrompt } from "../portfolio-knowledge";
+import { getPortfolioSystemPrompt } from "../portfolio-knowledge.js";
 
 export default async function handler(req: any, res: any) {
   if (req.method !== "POST") {
