@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Particles, { initParticlesEngine } from "@tsparticles/react";
-import { loadBasic } from "@tsparticles/basic";
+import { loadFull } from "tsparticles";
 import type { Container, Engine } from "@tsparticles/engine";
 
 const ParticleBackground = () => {
@@ -8,7 +8,7 @@ const ParticleBackground = () => {
 
   useEffect(() => {
     initParticlesEngine(async (engine: Engine) => {
-      await loadBasic(engine);
+      await loadFull(engine);
     }).then(() => {
       setInit(true);
     });
@@ -27,23 +27,22 @@ const ParticleBackground = () => {
       },
       fpsLimit: 120,
       interactivity: {
+        detectsOn: "window" as const,
         events: {
           onClick: {
             enable: true,
-            mode: "push",
+            mode: "attract",
           },
           onHover: {
             enable: true,
-            mode: "repulse",
+            mode: "attract",
           },
         },
         modes: {
-          push: {
-            quantity: 4,
-          },
-          repulse: {
+          attract: {
             distance: 200,
             duration: 0.4,
+            factor: 3,
           },
         },
       },
@@ -54,7 +53,7 @@ const ParticleBackground = () => {
         links: {
           color: "#3B82F6",
           distance: 150,
-          enable: true,
+          enable: false,
           opacity: 0.2,
           width: 1,
         },
