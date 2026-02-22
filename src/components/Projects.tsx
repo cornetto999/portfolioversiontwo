@@ -5,9 +5,10 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, ExternalLink } from 'lucide-react';
 import project1 from '@/assets/e-boy.png';
 import project2 from '@/assets/who.png';
-import project3 from '@/assets/yt.png';
+import project3 from '@/assets/ytweb.png';
 import project4 from '@/assets/dtr.png';
 import project5 from '@/assets/luxera.png';
+import project6 from '@/assets/pos-sari.png';
 
 const Projects = () => {
   const ref = useRef(null);
@@ -42,7 +43,7 @@ const Projects = () => {
       description: 'Watch without ads, play in PiP. Trending in Philippines.',
       image: project3,
       technologies: ['React', 'Tailwind CSS', 'Google API'],
-      liveUrl: 'https://yt-web-app.vercel.app/',
+      liveUrl: 'https://yt-webapp.vercel.app/',
       githubUrl: 'https://github.com/cornetto999/yt-web-app',
       featured: false,
     },
@@ -63,6 +64,15 @@ const Projects = () => {
       technologies: ['React', 'TypeScript', 'Tailwind CSS', 'Supabase'],
       liveUrl: 'https://luxera.lovable.app',
       featured: true,
+    },
+    {
+      id: 6,
+      title: 'POS-Sari',
+      description: 'A lightweight point-of-sale web app tailored for sari-sari stores, for fast sales and inventory tracking.',
+      image: project6,
+      technologies: ['React', 'TypeScript', 'Tailwind CSS', 'Supabase'],
+      liveUrl: 'https://pos-sari.vercel.app',
+      featured: false,
     },
   ];
 
