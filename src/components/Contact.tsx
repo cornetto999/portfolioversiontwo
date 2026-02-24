@@ -19,39 +19,28 @@ const Contact = () => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const formSubmitEndpoint =
-    import.meta.env.VITE_FORMSUBMIT_ENDPOINT ||
-    'https://formsubmit.co/ajax/roayafrancisjake@gmail.com';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(formSubmitEndpoint, {
+      const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Accept: 'application/json',
         },
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
           message: formData.message,
-          _subject: `Portfolio Contact: ${formData.name}`,
-          _template: 'table',
-          _captcha: 'false',
         }),
       });
 
-      const result = await response.json().catch(() => null);
-      const success =
-        result?.success === true ||
-        result?.success === 'true' ||
-        result?.message === 'Email sent successfully';
+      const result = await response.json().catch(() => ({}));
 
-      if (!response.ok || !success) {
-        throw new Error('Unable to send message.');
+      if (!response.ok || result?.success !== true) {
+        throw new Error(result?.error || 'Unable to send message.');
       }
 
       toast({

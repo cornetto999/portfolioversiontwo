@@ -109,28 +109,33 @@ const FloatingAvatarBot = () => {
 
       const raw = await resp.text();
       const data = raw ? safeJsonParse(raw) : null;
+      const reply = typeof data?.reply === "string" ? data.reply : "";
+
+      if (reply) {
+        setMessages((prev) => [...prev, { id: `${Date.now()}-bot`, from: "bot", text: reply }]);
+        return;
+      }
 
       if (!resp.ok) {
-        const errText =
-          typeof data?.error === "string"
-            ? data.error
-            : raw
-              ? raw.slice(0, 300)
-              : "Request failed";
-
         setMessages((prev) => [
           ...prev,
           {
             id: `${Date.now()}-bot-error`,
             from: "bot",
-            text: `Request failed (${resp.status}): ${errText}`,
+            text: "The assistant is temporarily unavailable. Please try again in a bit.",
           },
         ]);
         return;
       }
 
-      const reply = typeof data?.reply === "string" ? data.reply : "";
-      setMessages((prev) => [...prev, { id: `${Date.now()}-bot`, from: "bot", text: reply || "" }]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `${Date.now()}-bot-empty`,
+          from: "bot",
+          text: "I couldn't generate a response just now. Please try again.",
+        },
+      ]);
     } catch (e: any) {
       setMessages((prev) => [
         ...prev,
