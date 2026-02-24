@@ -8,28 +8,48 @@ const About = () => {
   const isInView = useInView(ref, { once: true });
   const { languages, totalRepos, totalStars, isLoading, error } = useGitHubStats('cornetto999');
 
-  // Fallback skills if GitHub API fails
-  const fallbackSkills = [
-    { name: 'React/Next.js', level: 95, color: '#61dafb' },
-    { name: 'TypeScript', level: 90, color: '#3178c6' },
-    { name: 'Next.js', level: 88, color: '#000000' },
-    { name: 'Python', level: 85, color: '#3776ab' },
-    { name: 'UI/UX Design', level: 92, color: '#ff6b6b' },
-    { name: 'MySQL', level: 82, color: '#336791' },
-    { name: 'PHP', level: 80, color: '#777bb4' },
-    { name: 'PL/pgSQL', level: 75, color: '#336791' },
-    { name: 'HTML', level: 95, color: '#e34f26' },
-    { name: 'CSS', level: 90, color: '#1572b6' },
+  const preferredSkills = [
+    'React',
+    'TypeScript',
+    'Next.js',
+    'Python',
+    'MySQL',
+    'PHP',
+    'PL/pgSQL',
+    'HTML',
+    'CSS',
+    'Tailwind CSS',
+    'Flutter',
+    'Figma',
   ];
 
-  const skills = isLoading || error ? fallbackSkills : languages.map(lang => ({
-    name: lang.name,
-    level: lang.percentage,
-    color: lang.color
-  }));
+  const githubLanguageAlias: Record<string, string[]> = {
+    React: ['JavaScript', 'TypeScript', 'JSX', 'TSX'],
+    'TypeScript': ['TypeScript'],
+    'Next.js': ['JavaScript', 'TypeScript', 'TSX', 'JSX'],
+    Python: ['Python'],
+    MySQL: ['SQL'],
+    PHP: ['PHP'],
+    'PL/pgSQL': ['PL/pgSQL'],
+    HTML: ['HTML'],
+    CSS: ['CSS', 'SCSS', 'Sass'],
+    'Tailwind CSS': ['CSS'],
+    Flutter: ['Dart'],
+    Figma: [],
+  };
 
-  // Show warning if using fallback data
-  const isUsingFallback = isLoading || error;
+  const skills = preferredSkills.map((name) => {
+    const aliases = githubLanguageAlias[name] || [name];
+    const matched = languages
+      .filter((lang) => aliases.includes(lang.name))
+      .sort((a, b) => b.percentage - a.percentage)[0];
+
+    return {
+      name,
+      level: matched?.percentage ?? null,
+      color: matched?.color ?? '#6b7280',
+    };
+  });
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -91,7 +111,7 @@ const About = () => {
                 className="flex flex-wrap gap-3 mt-6"
                 variants={containerVariants}
               >
-                {['React', 'TypeScript', 'Next.js', 'Python', 'MySQL', 'PHP', 'PL/pgSQL', 'HTML', 'CSS', 'Tailwind CSS', 'Flutter', 'Figma'].map((tech) => (
+                {preferredSkills.map((tech) => (
                   <motion.span
                     key={tech}
                     variants={itemVariants}
@@ -127,44 +147,52 @@ const About = () => {
               {error && (
                 <div className="text-center py-4">
                   <p className="text-muted-foreground text-sm">
-                    Using fallback data (GitHub API unavailable)
+                    Unable to load live GitHub stats: {error}
                   </p>
                 </div>
               )}
               
-              <div className="space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {skills.map((skill, index) => (
                   <motion.div
                     key={skill.name}
                     variants={itemVariants}
-                    className="space-y-2"
+                    className="rounded-xl border border-border/70 bg-card/60 px-4 py-3"
                   >
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify-between items-center text-sm">
                       <div className="flex items-center gap-2">
-                        {skill.color && (
-                          <div 
-                            className="w-3 h-3 rounded-full" 
-                            style={{ backgroundColor: skill.color }}
-                          />
-                        )}
+                        <div
+                          className="w-2.5 h-2.5 rounded-full"
+                          style={{ backgroundColor: skill.color }}
+                        />
                         <span className="font-medium">{skill.name}</span>
                       </div>
-                      <span className="text-primary font-semibold">{skill.level}%</span>
+                      <span className="text-primary font-semibold">
+                        {skill.level !== null ? `${skill.level}%` : 'Listed'}
+                      </span>
                     </div>
-                    <div className="w-full bg-muted/30 rounded-full h-3 overflow-hidden">
+                    <div className="w-full bg-muted/30 rounded-full h-2.5 overflow-hidden mt-2">
                       <motion.div
                         className="h-full bg-gradient-border rounded-full"
                         initial={{ width: 0 }}
-                        animate={isInView ? { width: `${skill.level}%` } : { width: 0 }}
-                        transition={{ duration: 1, delay: index * 0.2 }}
-                        style={skill.color ? { 
-                          background: `linear-gradient(90deg, ${skill.color} 0%, ${skill.color}80 100%)` 
-                        } : undefined}
+                        animate={isInView ? { width: `${Math.max(skill.level ?? 18, 18)}%` } : { width: 0 }}
+                        transition={{ duration: 0.9, delay: index * 0.08 }}
+                        style={{
+                          background: `linear-gradient(90deg, ${skill.color} 0%, ${skill.color}80 100%)`,
+                        }}
                       />
                     </div>
                   </motion.div>
                 ))}
               </div>
+
+              {!isLoading && !error && skills.length === 0 && (
+                <div className="text-center py-4">
+                  <p className="text-muted-foreground text-sm">
+                    No GitHub language data available yet.
+                  </p>
+                </div>
+              )}
 
               {!isLoading && !error && (
                 <div className="text-center pt-4">

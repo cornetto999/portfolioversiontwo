@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
-import { useEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, ExternalLink } from 'lucide-react';
+import { ExternalLink, Github, Sparkles } from 'lucide-react';
 import project1 from '@/assets/e-boy.png';
 import project2 from '@/assets/who.png';
 import project3 from '@/assets/ytweb.png';
@@ -13,8 +13,6 @@ import project6 from '@/assets/pos-sari.png';
 const Projects = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
-  const [page, setPage] = useState(0);
-  const projectsPerPage = 3;
 
   const projects = [
     {
@@ -104,16 +102,6 @@ const Projects = () => {
   const displayProjects = [...projects].sort(
     (a, b) => Number(b.featured) - Number(a.featured)
   );
-  const totalPages = Math.max(1, Math.ceil(displayProjects.length / projectsPerPage));
-
-  useEffect(() => {
-    setPage((p) => Math.min(p, totalPages - 1));
-  }, [totalPages]);
-
-  const currentProjects = displayProjects.slice(
-    page * projectsPerPage,
-    page * projectsPerPage + projectsPerPage
-  );
 
   return (
     <section id="projects" ref={ref} className="py-20 relative overflow-hidden">
@@ -138,22 +126,18 @@ const Projects = () => {
             technical skills and passion for innovative solutions.
           </motion.p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {currentProjects.map((project) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {displayProjects.map((project) => (
               <motion.div
                 key={project.id}
                 variants={itemVariants}
                 className="group w-full"
               >
                 <motion.div
-                  className={`glass-card rounded-2xl overflow-hidden hover:shadow-glow-primary transition-all duration-500 group-hover:shadow-glow-secondary cursor-pointer ${
-                    project.featured ? 'lg:col-span-1' : ''
-                  }`}
+                  className="relative h-full min-h-[420px] rounded-[24px] overflow-hidden bg-card/80 border border-border/70 backdrop-blur-xl shadow-[0_12px_45px_-22px_hsl(var(--primary)/0.65)] transition-all duration-500 hover:border-primary/60 hover:shadow-[0_22px_65px_-25px_hsl(var(--primary)/0.75)] cursor-pointer flex flex-col"
                   whileHover={{ 
-                    y: -15,
-                    rotateX: 8,
-                    rotateY: 8,
-                    scale: 1.02,
+                    y: -8,
+                    scale: 1.01,
                   }}
                   transition={{ type: "spring", stiffness: 300, damping: 20 }}
                   style={{ 
@@ -162,14 +146,23 @@ const Projects = () => {
                   }}
                   onClick={() => handleProjectClick(project.liveUrl)}
                 >
+                  <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,hsl(var(--primary)/0.18),transparent_55%)]" />
+                  <div className="pointer-events-none absolute -top-24 -right-24 h-48 w-48 rounded-full bg-primary/10 blur-3xl" />
+
                   {/* Project Image */}
-                  <div className="relative overflow-hidden">
+                  <div className="relative overflow-hidden border-b border-border/60">
                     <img
                       src={project.image}
                       alt={project.title}
-                      className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110"
+                      className="w-full h-40 object-cover transition-transform duration-500 group-hover:scale-105"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    {project.featured && (
+                      <div className="absolute top-4 left-4 inline-flex items-center gap-1.5 rounded-full bg-background/85 border border-primary/40 px-3 py-1 text-xs font-semibold text-primary shadow-[0_0_20px_hsl(var(--primary)/0.2)]">
+                        <Sparkles className="w-3.5 h-3.5" />
+                        Featured
+                      </div>
+                    )}
                     
                     {/* Overlay buttons */}
                     <div className="absolute inset-0 flex items-center justify-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -183,15 +176,28 @@ const Projects = () => {
                       >
                         <ExternalLink className="w-4 h-4" />
                       </Button>
+                      {project.githubUrl && project.githubUrl !== '#' && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="bg-background/90 border-border rounded-full w-12 h-12 p-0"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleProjectClick(project.githubUrl!);
+                          }}
+                        >
+                          <Github className="w-4 h-4" />
+                        </Button>
+                      )}
                     </div>
                   </div>
 
                   {/* Project Content */}
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">
+                  <div className="p-6 relative z-10 flex h-full flex-col">
+                    <h3 className="text-xl font-bold mb-2 tracking-tight group-hover:text-primary transition-colors">
                       {project.title}
                     </h3>
-                    <p className="text-muted-foreground mb-4 line-clamp-3">
+                    <p className="text-muted-foreground mb-4 line-clamp-2 text-sm">
                       {project.description}
                     </p>
 
@@ -200,7 +206,7 @@ const Projects = () => {
                       {project.technologies.map((tech) => (
                         <span
                           key={tech}
-                          className="px-3 py-1 bg-primary/10 text-primary text-xs rounded-full"
+                          className="px-3 py-1 border border-primary/25 bg-primary/10 text-primary text-xs rounded-full tracking-wide"
                         >
                           {tech}
                         </span>
@@ -208,10 +214,10 @@ const Projects = () => {
                     </div>
 
                     {/* Links */}
-                    <div className="flex gap-3">
+                    <div className="mt-auto flex gap-3">
                       <Button
                         size="sm"
-                        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+                        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl h-9"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleProjectClick(project.liveUrl);
@@ -220,37 +226,25 @@ const Projects = () => {
                         <ExternalLink className="w-4 h-4 mr-2" />
                         Live Demo
                       </Button>
+                      {project.githubUrl && project.githubUrl !== '#' && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="rounded-xl h-9 px-3 border-primary/30 hover:border-primary/60 hover:bg-primary/10"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleProjectClick(project.githubUrl!);
+                          }}
+                        >
+                          <Github className="w-4 h-4" />
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </motion.div>
               </motion.div>
             ))}
           </div>
-
-          <motion.div
-            variants={itemVariants}
-            className="flex items-center justify-center gap-4 mt-12"
-          >
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg rounded-xl magnetic-hover"
-              disabled={page === 0}
-              onClick={() => setPage((p) => Math.max(0, p - 1))}
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg rounded-xl magnetic-hover"
-              disabled={page >= totalPages - 1}
-              onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
-            >
-              <ArrowRight className="w-5 h-5" />
-            </Button>
-          </motion.div>
         </motion.div>
       </div>
     </section>

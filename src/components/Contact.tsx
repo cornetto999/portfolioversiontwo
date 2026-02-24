@@ -4,7 +4,7 @@ import { useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Github, Linkedin, Mail, Twitter } from 'lucide-react';
+import { Github, Linkedin, Mail } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const Contact = () => {
@@ -19,30 +19,62 @@ const Contact = () => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const formSubmitEndpoint =
+    import.meta.env.VITE_FORMSUBMIT_ENDPOINT ||
+    'https://formsubmit.co/ajax/roayafrancisjake@gmail.com';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    const subject = encodeURIComponent(`Portfolio Contact: ${formData.name}`);
-    const bodyLines = [
-      `Name: ${formData.name}`,
-      `Email: ${formData.email}`,
-      '',
-      formData.message,
-    ];
-    const body = encodeURIComponent(bodyLines.join('\n'));
+    try {
+      const response = await fetch(formSubmitEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+          _subject: `Portfolio Contact: ${formData.name}`,
+          _template: 'table',
+          _captcha: 'false',
+        }),
+      });
 
-    // Open default mail client with pre-filled content
-    window.location.href = `mailto:roayafrancisjake@gmail.com?subject=${subject}&body=${body}`;
+      const result = await response.json().catch(() => null);
+      const success =
+        result?.success === true ||
+        result?.success === 'true' ||
+        result?.message === 'Email sent successfully';
 
-    toast({
-      title: "Opening your email app...",
-      description: "If it didn't open, please ensure a default mail app is set.",
-    });
+      if (!response.ok || !success) {
+        throw new Error('Unable to send message.');
+      }
 
-    setFormData({ name: '', email: '', message: '' });
-    setIsSubmitting(false);
+      toast({
+        title: 'Message sent',
+        description: "Thanks for reaching out. I'll get back to you soon.",
+      });
+      setFormData({ name: '', email: '', message: '' });
+    } catch (error) {
+      const subject = encodeURIComponent(`Portfolio Contact: ${formData.name}`);
+      const body = encodeURIComponent(
+        `Name: ${formData.name}\nEmail: ${formData.email}\n\n${formData.message}`
+      );
+
+      toast({
+        title: 'Send failed',
+        description: 'Please try again or send directly using your email app.',
+        variant: 'destructive',
+      });
+
+      window.location.href = `mailto:roayafrancisjake@gmail.com?subject=${subject}&body=${body}`;
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -103,7 +135,10 @@ const Contact = () => {
 
           <div className="grid lg:grid-cols-2 gap-16">
             {/* Contact Form */}
-            <motion.div variants={itemVariants}>
+            <motion.div
+              variants={itemVariants}
+              className="rounded-3xl border border-border/70 bg-card/60 backdrop-blur-xl p-6 md:p-8 shadow-[0_18px_50px_-28px_hsl(var(--primary)/0.65)]"
+            >
               <h3 className="text-2xl font-semibold mb-6">Send me a message</h3>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
@@ -114,7 +149,7 @@ const Contact = () => {
                     value={formData.name}
                     onChange={handleChange}
                     required
-                    className="bg-card border-border focus:border-primary transition-colors"
+                    className="h-12 rounded-xl border-border/60 bg-background/70 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary/70 transition-all"
                   />
                 </div>
                 <div>
@@ -125,7 +160,7 @@ const Contact = () => {
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    className="bg-card border-border focus:border-primary transition-colors"
+                    className="h-12 rounded-xl border-border/60 bg-background/70 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary/70 transition-all"
                   />
                 </div>
                 <div>
@@ -136,13 +171,13 @@ const Contact = () => {
                     onChange={handleChange}
                     required
                     rows={6}
-                    className="bg-card border-border focus:border-primary transition-colors resize-none"
+                    className="rounded-xl border-border/60 bg-background/70 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary/70 transition-all resize-none"
                   />
                 </div>
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 text-lg rounded-xl magnetic-hover glow-hover"
+                  className="w-full h-12 text-base rounded-xl bg-[linear-gradient(135deg,hsl(var(--primary)),hsl(var(--secondary)))] text-primary-foreground hover:opacity-90 transition-all shadow-[0_12px_30px_-15px_hsl(var(--primary)/0.8)]"
                 >
                   {isSubmitting ? 'Sending...' : 'Send Message'}
                 </Button>
@@ -150,7 +185,10 @@ const Contact = () => {
             </motion.div>
 
             {/* Contact Info */}
-            <motion.div variants={itemVariants} className="space-y-8">
+            <motion.div
+              variants={itemVariants}
+              className="space-y-8 rounded-3xl border border-border/70 bg-card/50 backdrop-blur-xl p-6 md:p-8"
+            >
               <div>
                 <h3 className="text-2xl font-semibold mb-6">Let's connect</h3>
                 <div className="space-y-4">
@@ -180,7 +218,7 @@ const Contact = () => {
                       href={social.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`w-12 h-12 glass-card rounded-full flex items-center justify-center text-muted-foreground ${social.color} hover:bg-primary/10 transition-all duration-300 magnetic-hover`}
+                      className={`w-12 h-12 rounded-xl border border-border/70 bg-background/70 flex items-center justify-center text-muted-foreground ${social.color} hover:bg-primary/10 hover:border-primary/40 transition-all duration-300 magnetic-hover`}
                       whileHover={{ 
                         scale: 1.2, 
                         y: -3,
@@ -198,7 +236,7 @@ const Contact = () => {
 
               {/* Call to Action */}
               <motion.div
-                className="glass-card p-6 rounded-2xl"
+                className="p-6 rounded-2xl border border-border/70 bg-background/60"
                 whileHover={{ scale: 1.02 }}
               >
                 <h4 className="text-lg font-semibold mb-2">Ready to start a project?</h4>
@@ -207,7 +245,7 @@ const Contact = () => {
                 </p>
                 <Button
                   variant="outline"
-                  className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+                  className="border-primary/40 bg-card/70 text-primary hover:bg-primary hover:text-primary-foreground rounded-xl"
                   asChild
                 >
                   <a href="/resume.pdf" download target="_blank" rel="noopener noreferrer">
