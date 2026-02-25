@@ -54,7 +54,7 @@ const Preloader = ({ onComplete }: PreloaderProps) => {
       className="fixed inset-0 z-[70] flex flex-col items-center justify-center bg-background"
     >
       <div className="flex flex-col items-center gap-4">
-        <p ref={textRef} className="text-sm uppercase tracking-[0.4em] text-muted-foreground">
+        <p ref={textRef} className="brand-gradient text-sm uppercase tracking-[0.4em]">
           Loading Portfolio
         </p>
         <div className="h-1 w-56 overflow-hidden rounded-full bg-muted/30">

@@ -17,7 +17,7 @@ const ThemeToggle = () => {
     <Button
       variant="outline"
       size="icon"
-      className="h-10 w-10 rounded-full border-border/60 bg-background/60 hover:bg-primary/10"
+      className="glass-button h-10 w-10 rounded-full hover:bg-primary/10"
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
       aria-label="Toggle theme"
     >

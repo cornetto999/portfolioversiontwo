@@ -3,6 +3,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGitHubStats } from '@/hooks/useGitHubStats';
 import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion';
+import { useGsapCards } from '@/hooks/use-gsap-cards';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -10,6 +11,8 @@ const About = () => {
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const { languages, totalRepos, totalStars, isLoading, error } = useGitHubStats('cornetto999');
   const prefersReducedMotion = usePrefersReducedMotion();
+  useGsapCards(sectionRef, { selector: '.about-card', start: 'top 78%', stagger: 0.12, once: true });
+  useGsapCards(sectionRef, { selector: '.skill-card', start: 'top 78%', stagger: 0.08, once: true });
 
   const preferredSkills = [
     'React',
@@ -101,7 +104,7 @@ const About = () => {
         <div className="mx-auto max-w-6xl">
           <div className="about-reveal text-center">
             <h2 className="text-4xl font-semibold md:text-5xl">
-              About <span className="gradient-text">Me</span>
+            About <span>Me</span>
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
               A quick snapshot of my background, strengths, and what I bring to every project.
@@ -139,7 +142,7 @@ const About = () => {
                 {preferredSkills.map((tech) => (
                   <span
                     key={tech}
-                    className="rounded-full border border-border/60 bg-card/60 px-4 py-2 text-sm font-medium text-foreground/90 shadow-[0_8px_30px_-20px_rgba(0,0,0,0.6)]"
+                    className="glass-badge rounded-full px-4 py-2 text-sm font-medium text-foreground/90"
                   >
                     {tech}
                   </span>
@@ -149,11 +152,11 @@ const About = () => {
 
             <div className="about-reveal space-y-8">
               <div className="grid gap-4 sm:grid-cols-2">
-                <div className="rounded-2xl border border-border/60 bg-gradient-to-br from-background/60 to-card/80 p-4">
+                <div className="about-card glass-card glass-hover rounded-2xl p-4">
                   <div className="text-sm text-muted-foreground">Years of experience</div>
                   <div className="mt-2 text-3xl font-semibold text-primary">1+ Years</div>
                 </div>
-                <div className="rounded-2xl border border-border/60 bg-gradient-to-br from-background/60 to-card/80 p-4">
+                <div className="about-card glass-card glass-hover rounded-2xl p-4">
                   <div className="text-sm text-muted-foreground">What I build</div>
                   <div className="mt-2 text-lg font-semibold">Web Apps • Dashboards • Admin Panels</div>
                 </div>
@@ -168,7 +171,7 @@ const About = () => {
                 ].map((card) => (
                   <div
                     key={card.title}
-                    className="rounded-2xl border border-border/60 bg-card/50 p-5 shadow-[0_18px_45px_-32px_rgba(0,0,0,0.7)]"
+                    className="about-card glass-card glass-hover rounded-2xl p-5"
                   >
                     <h4 className="text-base font-semibold">{card.title}</h4>
                     <p className="mt-2 text-sm text-muted-foreground">{card.desc}</p>
@@ -176,7 +179,7 @@ const About = () => {
                 ))}
               </div>
 
-              <div className="rounded-3xl border border-border/60 bg-card/50 p-6 backdrop-blur-xl">
+              <div className="glass-card rounded-3xl p-6">
                 <div className="flex items-center justify-between">
                   <h3 className="text-2xl font-semibold text-secondary">Skills & Expertise</h3>
                   {!isLoading && !error && (
@@ -202,7 +205,7 @@ const About = () => {
 
                 <div className="mt-6 grid gap-4 sm:grid-cols-2">
                   {skills.map((skill) => (
-                    <div key={skill.name} className="rounded-2xl border border-border/60 bg-background/70 px-4 py-3">
+                    <div key={skill.name} className="skill-card glass-card glass-hover rounded-2xl px-4 py-3">
                       <div className="flex items-center justify-between text-sm">
                         <div className="flex items-center gap-2">
                           <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: skill.color }} />
@@ -252,7 +255,7 @@ const About = () => {
                 {stats.map((stat) => (
                   <div
                     key={stat.label}
-                    className="rounded-2xl border border-border/60 bg-gradient-to-br from-background/60 to-card/80 p-4 text-center shadow-[0_15px_45px_-30px_rgba(0,0,0,0.6)]"
+                    className="glass-card glass-hover rounded-2xl p-4 text-center"
                   >
                     <div className="text-2xl font-semibold text-primary">{stat.value}</div>
                     <div className="mt-1 text-sm font-medium text-foreground/80">{stat.label}</div>

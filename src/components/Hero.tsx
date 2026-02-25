@@ -1,6 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import ParticleBackground from '@/components/ParticleBackground';
 import heroAvatar from '@/assets/profile.png';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -96,21 +95,14 @@ const Hero = () => {
       id="home"
       className="relative flex min-h-screen items-center justify-center overflow-hidden pb-16 pt-28"
     >
-      {!prefersReducedMotion && <ParticleBackground />}
-
-      <div className="absolute inset-0 hero-gradient opacity-40" />
-      <div className="hero-orb absolute -top-10 left-10 h-24 w-24 rounded-full bg-primary/20 blur-2xl" />
-      <div className="hero-orb absolute bottom-10 right-10 h-32 w-32 rounded-full bg-secondary/20 blur-2xl" />
-      <div className="hero-orb absolute top-1/3 left-1/3 h-16 w-16 rounded-full bg-tertiary/20 blur-xl" />
-
       <div ref={heroRef} className="container relative z-10 mx-auto px-4">
         <div className="grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
           <div className="order-2 text-center lg:order-1 lg:text-left">
             <div className="hero-fade hidden flex-wrap items-center gap-3 lg:flex">
-              <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1 text-xs uppercase tracking-[0.3em] text-primary">
+              <span className="glass-badge inline-flex items-center gap-2 rounded-full px-4 py-1 text-xs uppercase tracking-[0.3em] text-foreground">
                 Open to work
               </span>
-              <span className="inline-flex items-center gap-2 rounded-full border border-secondary/30 bg-secondary/10 px-4 py-1 text-xs uppercase tracking-[0.3em] text-secondary">
+              <span className="glass-badge inline-flex items-center gap-2 rounded-full px-4 py-1 text-xs uppercase tracking-[0.3em] text-foreground">
                 Currently working on system tools
               </span>
             </div>
@@ -118,7 +110,7 @@ const Hero = () => {
               <span className="gradient-text">{nameText}</span>
             </h1>
             <p className="hero-fade mt-4 text-lg text-muted-foreground">
-              <span className="text-primary">{displayText || roles[0]}</span>
+              <span className="brand-gradient">{displayText || roles[0]}</span>
               <span className="ml-1 inline-block h-5 w-[2px] animate-caret bg-primary align-middle" />
             </p>
             <p className="hero-fade mt-6 max-w-2xl text-base text-muted-foreground">
@@ -127,20 +119,20 @@ const Hero = () => {
             <div className="hero-fade mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
               <Button
                 onClick={() => scrollToSection('#projects')}
-                className="magnetic-hover h-12 rounded-full bg-primary px-8 text-base text-primary-foreground shadow-[0_12px_30px_-15px_hsl(var(--primary)/0.8)] hover:bg-primary/90"
+                className="glass-button magnetic-hover h-12 rounded-full px-8 text-base text-primary-foreground hover:bg-primary/90"
               >
                 View Projects
               </Button>
               <Button
                 variant="outline"
                 onClick={() => scrollToSection('#contact')}
-                className="magnetic-hover h-12 rounded-full border-primary/40 bg-transparent px-8 text-base text-primary hover:bg-primary hover:text-primary-foreground"
+                className="glass-button magnetic-hover h-12 rounded-full px-8 text-base text-primary hover:bg-primary hover:text-primary-foreground"
               >
                 Contact Me
               </Button>
               <Button
                 variant="ghost"
-                className="magnetic-hover h-12 rounded-full border border-border/60 px-6 text-base"
+                className="glass-button magnetic-hover h-12 rounded-full px-6 text-base"
                 asChild
               >
                 <a href="/resume.pdf" download>
@@ -152,10 +144,10 @@ const Hero = () => {
 
           <div className="hero-avatar order-1 flex flex-col items-center justify-center gap-4 lg:order-2 lg:items-end lg:justify-end">
             <div className="hero-fade flex flex-wrap items-center justify-center gap-3 lg:hidden">
-              <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1 text-xs uppercase tracking-[0.3em] text-primary">
+              <span className="glass-badge inline-flex items-center gap-2 rounded-full px-4 py-1 text-xs uppercase tracking-[0.3em] text-foreground">
                 Open to work
               </span>
-              <span className="inline-flex items-center gap-2 rounded-full border border-secondary/30 bg-secondary/10 px-4 py-1 text-xs uppercase tracking-[0.3em] text-secondary">
+              <span className="glass-badge inline-flex items-center gap-2 rounded-full px-4 py-1 text-xs uppercase tracking-[0.3em] text-foreground">
                 Currently working on system tools
               </span>
             </div>

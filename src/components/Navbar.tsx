@@ -80,14 +80,14 @@ const Navbar = () => {
       ref={navRef}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? 'bg-background/70 backdrop-blur-xl shadow-[0_10px_30px_-20px_rgba(0,0,0,0.6)]'
+          ? 'glass-navbar shadow-[0_10px_30px_-20px_rgba(0,0,0,0.6)]'
           : 'bg-transparent'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <button
-            className="text-lg font-semibold tracking-tight gradient-text"
+            className="text-lg font-semibold tracking-tight brand-gradient"
             onClick={() => scrollToSection('#home')}
           >
             Francis Jake Roaya
@@ -100,13 +100,13 @@ const Navbar = () => {
                 onClick={() => scrollToSection(link.href)}
                 className={`text-sm font-medium transition-colors relative ${
                   activeSection === link.href.replace('#', '')
-                    ? 'text-primary'
-                    : 'text-foreground/80 hover:text-primary'
+                    ? 'brand-gradient'
+                    : 'text-foreground/80 hover:text-foreground'
                 }`}
               >
                 {link.label}
                 <span
-                  className={`absolute -bottom-2 left-0 h-[2px] w-full rounded-full bg-gradient-to-r from-primary via-secondary to-tertiary transition-all duration-300 ${
+                  className={`absolute -bottom-2 left-0 h-[2px] w-full rounded-full brand-gradient-line transition-all duration-300 ${
                     activeSection === link.href.replace('#', '')
                       ? 'opacity-100'
                       : 'opacity-0'
@@ -119,7 +119,7 @@ const Navbar = () => {
           <div className="hidden md:flex items-center gap-3">
             <Button
               variant="outline"
-              className="rounded-full border-border/60 bg-background/60 px-4"
+              className="glass-button rounded-full px-4"
               asChild
             >
               <a href="/resume.pdf" download>
@@ -164,7 +164,7 @@ const Navbar = () => {
               ))}
               <Button
                 variant="outline"
-                className="mt-2 w-full rounded-xl border-border/60 bg-background/60"
+                className="glass-button mt-2 w-full rounded-xl"
                 asChild
               >
                 <a href="/resume.pdf" download>

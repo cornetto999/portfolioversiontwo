@@ -3,6 +3,7 @@ import { Code2, ServerCog, Database, LayoutDashboard, Wrench, Rocket } from 'luc
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion';
+import { useGsapCards } from '@/hooks/use-gsap-cards';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -42,6 +43,7 @@ const services = [
 const Services = () => {
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
+  useGsapCards(sectionRef, { selector: '.service-card', start: 'top 80%', stagger: 0.12, once: true });
 
   useLayoutEffect(() => {
     if (prefersReducedMotion) return;
@@ -70,7 +72,7 @@ const Services = () => {
         <div className="mx-auto max-w-6xl">
           <div className="services-reveal text-center">
             <h2 className="text-4xl font-semibold md:text-5xl">
-              Services <span className="gradient-text">I Provide</span>
+              Services <span>I Provide</span>
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
               End-to-end support from interface design to production deployment.
@@ -81,7 +83,7 @@ const Services = () => {
             {services.map((service) => (
               <div
                 key={service.title}
-                className="group relative overflow-hidden rounded-3xl border border-border/60 bg-card/60 p-6 shadow-[0_20px_60px_-40px_rgba(0,0,0,0.8)]"
+                className="service-card glass-card glass-hover group relative overflow-hidden rounded-3xl p-6"
               >
                 <div className="absolute left-0 top-6 h-10 w-1.5 rounded-full bg-gradient-to-b from-primary via-secondary to-tertiary opacity-0 transition-all duration-300 group-hover:opacity-100" />
                 <div className="flex items-center gap-3">

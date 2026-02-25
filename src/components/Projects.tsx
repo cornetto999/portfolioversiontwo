@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ExternalLink, Github, Sparkles } from 'lucide-react';
 import gsap from 'gsap';
@@ -9,7 +9,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+  type CarouselApi,
+} from '@/components/ui/carousel';
 import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion';
+import { useGsapCards } from '@/hooks/use-gsap-cards';
 import project1 from '@/assets/e-boy.png';
 import project2 from '@/assets/who.png';
 import project3 from '@/assets/ytweb.png';
@@ -34,9 +43,12 @@ type Project = {
 
 const Projects = () => {
   const sectionRef = useRef<HTMLDivElement | null>(null);
-  const [activeFilter, setActiveFilter] = useState('All');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
+  useGsapCards(sectionRef, { selector: '.project-card', start: 'top 80%', stagger: 0.14, once: true });
+  const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
+  const [carouselHovered, setCarouselHovered] = useState(false);
+  const [carouselIndex, setCarouselIndex] = useState(0);
 
   const projects: Project[] = [
     {
@@ -147,18 +159,11 @@ const Projects = () => {
     },
   ];
 
-  const filters = ['All', 'Web Apps', 'Dashboards', 'UI'];
-
-  const baseProjects =
-    activeFilter === 'All'
-      ? projects
-      : projects.filter((project) => project.category === activeFilter);
-
-  const displayProjects = [...baseProjects].sort(
+  const displayProjects = [...projects].sort(
     (a, b) => Number(b.featured) - Number(a.featured)
   );
 
-  const featuredProject = projects.find((project) => project.featured);
+  const featuredProjects = displayProjects;
 
   useLayoutEffect(() => {
     if (prefersReducedMotion) return;
@@ -177,26 +182,42 @@ const Projects = () => {
         ease: 'power3.out',
       });
 
-      gsap.from('.project-card', {
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top 65%',
-        },
-        y: 40,
-        autoAlpha: 0,
-        duration: 0.9,
-        stagger: 0.12,
-        ease: 'power3.out',
-      });
     }, sectionRef);
 
     return () => ctx.revert();
-  }, [activeFilter, prefersReducedMotion]);
+  }, [prefersReducedMotion]);
+
+  useEffect(() => {
+    if (!carouselApi) return;
+    const onSelect = () => setCarouselIndex(carouselApi.selectedScrollSnap());
+    carouselApi.on('select', onSelect);
+    onSelect();
+    return () => carouselApi.off('select', onSelect);
+  }, [carouselApi]);
+
+  useEffect(() => {
+    if (!carouselApi || prefersReducedMotion || carouselHovered) return;
+    const interval = window.setInterval(() => {
+      carouselApi.scrollNext();
+    }, 3200);
+    return () => window.clearInterval(interval);
+  }, [carouselApi, prefersReducedMotion, carouselHovered]);
 
   const handleProjectClick = (url: string) => {
     if (url && url !== '#') {
       window.open(url, '_blank', 'noopener,noreferrer');
     }
+  };
+
+  const getSlideClass = (index: number) => {
+    const total = featuredProjects.length;
+    if (total === 0) return 'cover-slide';
+    let delta = (index - carouselIndex + total) % total;
+    if (delta > total / 2) delta -= total;
+    if (delta === 0) return 'cover-slide is-active';
+    if (delta === -1) return 'cover-slide is-left';
+    if (delta === 1) return 'cover-slide is-right';
+    return 'cover-slide is-far';
   };
 
   return (
@@ -205,7 +226,7 @@ const Projects = () => {
         <div className="mx-auto max-w-6xl">
           <div className="projects-reveal text-center">
             <h2 className="text-4xl font-semibold md:text-5xl">
-              Featured <span className="gradient-text">Projects</span>
+              Featured <span>Projects</span>
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
               A showcase of my recent work and creative projects that demonstrate my technical skills and passion for
@@ -213,193 +234,97 @@ const Projects = () => {
             </p>
           </div>
 
-          {featuredProject && (
-            <div className="projects-reveal mt-12 rounded-3xl border border-border/60 bg-card/60 p-6 shadow-[0_20px_70px_-35px_rgba(0,0,0,0.7)] lg:flex lg:items-center lg:gap-8">
-              <div className="relative overflow-hidden rounded-2xl border border-border/60 lg:w-[45%]">
-                <img
-                  src={featuredProject.image}
-                  alt={featuredProject.title}
-                  className="h-56 w-full object-cover lg:h-64"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-transparent to-transparent" />
-                <div className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full bg-background/80 px-3 py-1 text-xs font-semibold text-primary">
-                  <Sparkles className="h-3.5 w-3.5" />
-                  Spotlight
-                </div>
-              </div>
-              <div className="mt-6 lg:mt-0 lg:flex-1">
-                <h3 className="text-2xl font-semibold">{featuredProject.title}</h3>
-                <p className="mt-3 text-muted-foreground">{featuredProject.description}</p>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {featuredProject.technologies.map((tech) => (
-                    <span
-                      key={tech}
-                      className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs text-primary"
+          {featuredProjects.length > 0 && (
+            <div
+              className="projects-reveal mt-12"
+              onMouseEnter={() => setCarouselHovered(true)}
+              onMouseLeave={() => setCarouselHovered(false)}
+            >
+              <Carousel
+                setApi={setCarouselApi}
+                opts={{ loop: true, align: 'center' }}
+                className="relative"
+              >
+                <CarouselContent className="-ml-6">
+                  {featuredProjects.map((project, index) => (
+                    <CarouselItem
+                      key={project.title}
+                      className="pl-6 md:basis-1/2 lg:basis-1/3"
                     >
-                      {tech}
-                    </span>
+                      <div className={`${getSlideClass(index)} glass-card glass-hover flex h-full flex-col overflow-hidden rounded-3xl`}>
+                        <div className="relative overflow-hidden">
+                          <img
+                            src={project.image}
+                            alt={project.title}
+                            className="h-52 w-full object-cover transition-transform duration-500 hover:scale-105"
+                            loading="lazy"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
+                          <div className="glass-badge absolute left-4 top-4 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold text-primary">
+                            <Sparkles className="h-3.5 w-3.5" />
+                            Featured
+                          </div>
+                        </div>
+                        <div className="flex h-full flex-col p-5">
+                          <h3 className="text-lg font-semibold">{project.title}</h3>
+                          <p className="mt-2 text-sm text-muted-foreground">{project.description}</p>
+                          <div className="mt-4 flex flex-wrap gap-2">
+                            {project.technologies.map((tech) => (
+                              <span key={tech} className="glass-badge rounded-full px-3 py-1 text-xs text-primary">
+                                {tech}
+                              </span>
+                            ))}
+                          </div>
+                          <div className="mt-auto flex gap-3 pt-5">
+                            <Button
+                              size="sm"
+                              className="glass-button w-full rounded-xl text-primary-foreground"
+                              onClick={() => handleProjectClick(project.liveUrl)}
+                            >
+                              <ExternalLink className="mr-2 h-4 w-4" />
+                              Live Demo
+                            </Button>
+                            {project.githubUrl && project.githubUrl !== '#' && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="glass-button rounded-xl"
+                                onClick={() => handleProjectClick(project.githubUrl!)}
+                              >
+                                <Github className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </CarouselItem>
                   ))}
-                </div>
-                <div className="mt-6 flex flex-wrap gap-3">
-                  <Button
-                    className="rounded-full bg-primary text-primary-foreground"
-                    onClick={() => handleProjectClick(featuredProject.liveUrl)}
-                  >
-                    <ExternalLink className="mr-2 h-4 w-4" />
-                    Live Demo
-                  </Button>
-                  {featuredProject.githubUrl && featuredProject.githubUrl !== '#' && (
-                    <Button
-                      variant="outline"
-                      className="rounded-full border-primary/30"
-                      onClick={() => handleProjectClick(featuredProject.githubUrl!)}
-                    >
-                      <Github className="mr-2 h-4 w-4" />
-                      GitHub
-                    </Button>
-                  )}
-                </div>
+                </CarouselContent>
+                <CarouselPrevious className="glass-button" />
+                <CarouselNext className="glass-button" />
+              </Carousel>
+
+              <div className="mt-6 flex items-center justify-center gap-2">
+                {featuredProjects.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => carouselApi?.scrollTo(index)}
+                    className={`h-2.5 w-2.5 rounded-full transition-all ${
+                      carouselIndex === index ? 'bg-primary' : 'bg-muted/50'
+                    }`}
+                    aria-label={`Go to slide ${index + 1}`}
+                  />
+                ))}
               </div>
             </div>
           )}
 
-          <div className="projects-reveal mt-10 flex flex-wrap justify-center gap-3">
-            {filters.map((filter) => (
-              <button
-                key={filter}
-                onClick={() => setActiveFilter(filter)}
-                className={`rounded-full border px-4 py-2 text-sm font-medium transition-all ${
-                  activeFilter === filter
-                    ? 'border-primary/60 bg-primary/10 text-primary shadow-[0_12px_35px_-24px_hsl(var(--primary)/0.9)]'
-                    : 'border-border/60 text-muted-foreground hover:border-primary/40 hover:text-primary'
-                }`}
-              >
-                {filter}
-              </button>
-            ))}
-          </div>
-
-          <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {displayProjects.map((project) => (
-              <div key={project.id} className="project-card group">
-                <div
-                  className="relative flex h-full min-h-[420px] cursor-pointer flex-col overflow-hidden rounded-[28px] border border-border/60 bg-card/70 shadow-[0_20px_55px_-35px_rgba(0,0,0,0.8)] transition-all duration-500 hover:-translate-y-2 hover:border-primary/50"
-                  onClick={() => handleProjectClick(project.liveUrl)}
-                >
-                  <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,hsl(var(--primary)/0.18),transparent_60%)]" />
-
-                  <div className="relative overflow-hidden border-b border-border/60">
-                    <img
-                      src={project.image}
-                      alt={project.title}
-                      className="h-44 w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/40 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                    {project.featured && (
-                      <div className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-background/85 border border-primary/40 px-3 py-1 text-xs font-semibold text-primary">
-                        <Sparkles className="h-3.5 w-3.5" />
-                        Featured
-                      </div>
-                    )}
-                    <div className="absolute inset-0 flex items-center justify-center gap-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                      <Button
-                        size="icon"
-                        className="h-11 w-11 rounded-full bg-primary text-primary-foreground"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleProjectClick(project.liveUrl);
-                        }}
-                      >
-                        <ExternalLink className="h-4 w-4" />
-                      </Button>
-                      {project.githubUrl && project.githubUrl !== '#' && (
-                        <Button
-                          size="icon"
-                          variant="outline"
-                          className="h-11 w-11 rounded-full border-border bg-background/90"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleProjectClick(project.githubUrl!);
-                          }}
-                        >
-                          <Github className="h-4 w-4" />
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="relative z-10 flex h-full flex-col p-6">
-                    <div className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-                      {project.category}
-                    </div>
-                    <h3 className="mt-2 text-xl font-semibold transition-colors group-hover:text-primary">
-                      {project.title}
-                    </h3>
-                    <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
-                      {project.description}
-                    </p>
-
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      {project.technologies.map((tech) => (
-                        <span
-                          key={tech}
-                          className="rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-xs text-primary"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-
-                    <div className="mt-auto flex gap-3 pt-6">
-                      <Button
-                        size="sm"
-                        className="w-full rounded-xl bg-primary text-primary-foreground"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleProjectClick(project.liveUrl);
-                        }}
-                      >
-                        <ExternalLink className="mr-2 h-4 w-4" />
-                        Live Demo
-                      </Button>
-                      {project.caseStudyUrl && project.caseStudyUrl !== '#' ? (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="rounded-xl border-border/60"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleProjectClick(project.caseStudyUrl!);
-                          }}
-                        >
-                          Case Study
-                        </Button>
-                      ) : (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="rounded-xl border-border/60"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedProject(project);
-                        }}
-                      >
-                        Details
-                      </Button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          {/* Grid removed in favor of carousel-only */}
         </div>
       </div>
 
       <Dialog open={!!selectedProject} onOpenChange={() => setSelectedProject(null)}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="glass-card max-w-lg">
           {selectedProject && (
             <>
               <DialogHeader>
@@ -415,17 +340,14 @@ const Projects = () => {
                 <p className="text-sm text-muted-foreground">{selectedProject.description}</p>
                 <div className="flex flex-wrap gap-2">
                   {selectedProject.technologies.map((tech) => (
-                    <span
-                      key={tech}
-                      className="rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-xs text-primary"
-                    >
+                    <span key={tech} className="glass-badge rounded-full px-3 py-1 text-xs text-primary">
                       {tech}
                     </span>
                   ))}
                 </div>
                 <div className="flex gap-3">
                   <Button
-                    className="rounded-xl bg-primary text-primary-foreground"
+                    className="glass-button rounded-xl text-primary-foreground"
                     onClick={() => handleProjectClick(selectedProject.liveUrl)}
                   >
                     <ExternalLink className="mr-2 h-4 w-4" />
@@ -434,7 +356,7 @@ const Projects = () => {
                   {selectedProject.caseStudyUrl && selectedProject.caseStudyUrl !== '#' && (
                     <Button
                       variant="outline"
-                      className="rounded-xl"
+                      className="glass-button rounded-xl"
                       onClick={() => handleProjectClick(selectedProject.caseStudyUrl!)}
                     >
                       Case Study
@@ -443,7 +365,7 @@ const Projects = () => {
                   {selectedProject.githubUrl && selectedProject.githubUrl !== '#' && (
                     <Button
                       variant="outline"
-                      className="rounded-xl"
+                      className="glass-button rounded-xl"
                       onClick={() => handleProjectClick(selectedProject.githubUrl!)}
                     >
                       <Github className="mr-2 h-4 w-4" />

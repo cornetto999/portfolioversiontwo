@@ -43,6 +43,8 @@
 
     --gradient-card: linear-gradient(145deg, hsl(220 20% 8% / 0.8), hsl(220 20% 12% / 0.5));
     --gradient-border: linear-gradient(90deg, hsl(217 91% 60%), hsl(270 95% 75%), hsl(315 100% 70%));
+    --brand-1: 96 165 250;
+    --brand-2: 37 99 235;
 
     --glow-primary: 0 0 30px hsl(217 91% 60% / 0.3);
     --glow-secondary: 0 0 30px hsl(270 95% 75% / 0.25);
@@ -84,6 +86,8 @@
     --ring: 222 47% 40%;
     --glass-bg: rgba(255, 255, 255, 0.8);
     --glass-border: rgba(15, 23, 42, 0.1);
+    --brand-1: 30 64 175;
+    --brand-2: 37 99 235;
   }
 }
 
@@ -138,21 +142,126 @@ body.chatbot-open .portfolio-custom-cursor {
   }
 
   .glass-card {
-    background: var(--glass-bg);
-    backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 18px 45px -30px rgba(0, 0, 0, 0.8);
+    position: relative;
+    color: hsl(var(--foreground));
+    background-clip: padding-box;
+    isolation: isolate;
+    overflow: hidden;
+  }
+
+  .glass-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    pointer-events: none;
+    mask: linear-gradient(180deg, rgba(255, 255, 255, 0.6), transparent 70%);
+  }
+
+  .glass-button {
+    background: linear-gradient(135deg, rgba(16, 37, 78, 0.85), rgba(24, 158, 159, 0.7), rgba(253, 107, 114, 0.7));
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 16px 40px -28px rgba(24, 158, 159, 0.6);
+    color: #f8fafc;
+    background-clip: padding-box;
+    overflow: hidden;
+  }
+
+  .brand-button {
+    background: linear-gradient(135deg, #10254e, #189e9f, #fd6b72);
+    color: #f8fafc;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 16px 40px -28px rgba(24, 158, 159, 0.6);
+  }
+
+  .brand-button:hover {
+    box-shadow: 0 22px 50px -28px rgba(24, 158, 159, 0.75);
+  }
+
+  .brand-button-outline {
+    background: transparent;
+    color: hsl(var(--foreground));
+    border: 1px solid rgba(255, 255, 255, 0.22);
+  }
+
+  .brand-button-outline:hover {
+    background: linear-gradient(135deg, rgba(16, 37, 78, 0.7), rgba(24, 158, 159, 0.55), rgba(253, 107, 114, 0.55));
+    color: #f8fafc;
+    border-color: rgba(255, 255, 255, 0.28);
+  }
+
+  .glass-input {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(10px);
+    color: hsl(var(--foreground));
+  }
+
+  .glass-input::placeholder {
+    color: hsl(var(--muted-foreground));
+  }
+
+  .glass-navbar {
+    background: rgba(7, 10, 20, 0.55);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(18px);
+  }
+
+  .glass-badge {
+    background: rgba(59, 130, 246, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    backdrop-filter: blur(10px);
+    color: hsl(var(--foreground));
+  }
+
+  .dark .glass-badge {
+    background: rgba(8, 12, 24, 0.6);
+    border-color: rgba(255, 255, 255, 0.18);
+  }
+
+  .light .glass-badge {
+    background: rgba(255, 255, 255, 0.7);
+    border-color: rgba(15, 23, 42, 0.12);
+  }
+
+  .glass-hover {
+    transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+  }
+
+  .glass-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 24px 60px -36px rgba(59, 130, 246, 0.65);
+    border-color: rgba(99, 102, 241, 0.45);
   }
 
   .gradient-text {
-    background: var(--gradient-border);
+    background: linear-gradient(135deg, #10254e, #189e9f, #fd6b72);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 
-  .hero-gradient {
-    background: var(--gradient-hero);
+  .brand-gradient {
+    background: linear-gradient(135deg, #10254e, #189e9f, #fd6b72);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .brand-gradient * {
+    -webkit-text-fill-color: inherit;
+  }
+
+  .brand-gradient-line {
+    background: linear-gradient(135deg, #10254e, #189e9f, #fd6b72);
   }
 
   .animate-caret {
@@ -194,6 +303,77 @@ body.chatbot-open .portfolio-custom-cursor {
 
   .magnetic-hover:hover {
     transform: translateY(-2px) scale(1.05);
+  }
+
+  .card-hover {
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
+  }
+
+  .card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 22px 60px -40px rgba(0, 0, 0, 0.9);
+  }
+
+  .cover-slide {
+    transform: perspective(900px) translateZ(0) scale(0.88);
+    opacity: 0.6;
+    filter: blur(0.2px);
+    transition: transform 0.6s ease, opacity 0.6s ease, filter 0.6s ease;
+    z-index: 1;
+  }
+
+  .cover-slide.is-active {
+    transform: perspective(900px) translateZ(40px) scale(1);
+    opacity: 1;
+    filter: blur(0);
+    z-index: 3;
+  }
+
+  .cover-slide.is-left {
+    transform: perspective(900px) translateX(-10px) rotateY(8deg) scale(0.9);
+    opacity: 0.75;
+    z-index: 2;
+  }
+
+  .cover-slide.is-right {
+    transform: perspective(900px) translateX(10px) rotateY(-8deg) scale(0.9);
+    opacity: 0.75;
+    z-index: 2;
+  }
+
+  .cover-slide.is-far {
+    transform: perspective(900px) scale(0.84);
+    opacity: 0.4;
+  }
+
+  .testi-cover {
+    transform: perspective(900px) translateZ(0) scale(0.88);
+    opacity: 0.6;
+    transition: transform 0.6s ease, opacity 0.6s ease, filter 0.6s ease;
+    z-index: 1;
+  }
+
+  .testi-cover.is-active {
+    transform: perspective(900px) translateZ(40px) scale(1);
+    opacity: 1;
+    z-index: 3;
+  }
+
+  .testi-cover.is-left {
+    transform: perspective(900px) translateX(-10px) rotateY(8deg) scale(0.9);
+    opacity: 0.75;
+    z-index: 2;
+  }
+
+  .testi-cover.is-right {
+    transform: perspective(900px) translateX(10px) rotateY(-8deg) scale(0.9);
+    opacity: 0.75;
+    z-index: 2;
+  }
+
+  .testi-cover.is-far {
+    transform: perspective(900px) scale(0.84);
+    opacity: 0.4;
   }
 
   #tsparticles {

@@ -145,7 +145,7 @@ const Contact = () => {
         <div className="mx-auto max-w-5xl">
           <div className="contact-reveal text-center">
             <h2 className="text-4xl font-semibold md:text-5xl">
-              Get In <span className="gradient-text">Touch</span>
+            Get In <span>Touch</span>
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
               Let’s build something great together. Have a project in mind or want to collaborate? I’d love to hear from
@@ -154,7 +154,7 @@ const Contact = () => {
           </div>
 
           <div className="contact-reveal mt-16 grid gap-12 lg:grid-cols-2">
-            <div className="rounded-3xl border border-border/60 bg-card/60 p-6 backdrop-blur-xl shadow-[0_18px_50px_-28px_hsl(var(--primary)/0.6)] md:p-8">
+            <div className="glass-card rounded-3xl p-6 md:p-8">
               <h3 className="text-2xl font-semibold">Send me a message</h3>
               <form onSubmit={handleSubmit} className="mt-6 space-y-5">
                 <div>
@@ -166,10 +166,10 @@ const Contact = () => {
                     onChange={handleChange}
                     onBlur={() => handleBlur('name')}
                     required
-                    className={`h-12 rounded-xl border-border/60 bg-background/70 focus-visible:ring-2 ${
-                      errors.name ? 'border-destructive/60 focus-visible:ring-destructive/40' : 'focus-visible:ring-primary/40'
-                    }`}
-                  />
+                  className={`glass-input h-12 rounded-xl focus-visible:ring-2 ${
+                    errors.name ? 'border-destructive/60 focus-visible:ring-destructive/40' : 'focus-visible:ring-primary/40'
+                  }`}
+                />
                   {errors.name && <p className="mt-2 text-xs text-destructive">{errors.name}</p>}
                 </div>
                 <div>
@@ -181,10 +181,10 @@ const Contact = () => {
                     onChange={handleChange}
                     onBlur={() => handleBlur('email')}
                     required
-                    className={`h-12 rounded-xl border-border/60 bg-background/70 focus-visible:ring-2 ${
-                      errors.email ? 'border-destructive/60 focus-visible:ring-destructive/40' : 'focus-visible:ring-primary/40'
-                    }`}
-                  />
+                  className={`glass-input h-12 rounded-xl focus-visible:ring-2 ${
+                    errors.email ? 'border-destructive/60 focus-visible:ring-destructive/40' : 'focus-visible:ring-primary/40'
+                  }`}
+                />
                   {errors.email && <p className="mt-2 text-xs text-destructive">{errors.email}</p>}
                 </div>
                 <div>
@@ -196,25 +196,25 @@ const Contact = () => {
                     onBlur={() => handleBlur('message')}
                     required
                     rows={6}
-                    className={`rounded-xl border-border/60 bg-background/70 focus-visible:ring-2 resize-none ${
-                      errors.message
-                        ? 'border-destructive/60 focus-visible:ring-destructive/40'
-                        : 'focus-visible:ring-primary/40'
-                    }`}
-                  />
+                  className={`glass-input rounded-xl focus-visible:ring-2 resize-none ${
+                    errors.message
+                      ? 'border-destructive/60 focus-visible:ring-destructive/40'
+                      : 'focus-visible:ring-primary/40'
+                  }`}
+                />
                   {errors.message && <p className="mt-2 text-xs text-destructive">{errors.message}</p>}
                 </div>
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="h-12 w-full rounded-xl bg-[linear-gradient(135deg,hsl(var(--primary)),hsl(var(--secondary)))] text-base text-primary-foreground shadow-[0_12px_30px_-15px_hsl(var(--primary)/0.8)]"
+                  className="glass-button h-12 w-full rounded-xl text-base text-primary-foreground"
                 >
                   {isSubmitting ? 'Sending...' : 'Send Message'}
                 </Button>
               </form>
             </div>
 
-            <div className="contact-reveal space-y-6 rounded-3xl border border-border/60 bg-card/50 p-6 backdrop-blur-xl md:p-8">
+            <div className="contact-reveal glass-card space-y-6 rounded-3xl p-6 md:p-8">
               <div>
                 <h3 className="text-2xl font-semibold">Let's connect</h3>
                 <p className="mt-4 text-muted-foreground">
@@ -242,7 +242,7 @@ const Contact = () => {
                       href={social.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex h-11 w-11 items-center justify-center rounded-xl border border-border/60 bg-background/70 text-muted-foreground transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:text-primary"
+                      className="glass-card glass-hover flex h-11 w-11 items-center justify-center rounded-xl text-muted-foreground"
                     >
                       <social.icon className="h-5 w-5" />
                     </a>
@@ -250,12 +250,12 @@ const Contact = () => {
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-border/60 bg-background/60 p-6">
+              <div className="glass-card rounded-2xl p-6">
                 <h4 className="text-lg font-semibold">Ready to start a project?</h4>
                 <p className="mt-2 text-muted-foreground">I'm available for freelance work and exciting collaborations.</p>
                 <Button
                   variant="outline"
-                  className="mt-4 rounded-xl border-primary/40 bg-card/70 text-primary hover:bg-primary hover:text-primary-foreground"
+                  className="glass-button mt-4 rounded-xl text-primary hover:text-primary-foreground"
                   asChild
                 >
                   <a href="/resume.pdf" download target="_blank" rel="noopener noreferrer">

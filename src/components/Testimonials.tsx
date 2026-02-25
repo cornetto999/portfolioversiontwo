@@ -2,6 +2,15 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+  type CarouselApi,
+} from '@/components/ui/carousel';
+import { Star } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -10,24 +19,28 @@ const testimonials = [
     name: 'Client A',
     role: 'Startup Founder',
     quote: 'Delivered a clean dashboard build with fast turnaround and clear communication.',
+    rating: 5,
   },
   {
     name: 'Client B',
     role: 'Operations Lead',
     quote: 'The admin panel improved our workflow instantly. Great UX decisions.',
+    rating: 5,
   },
   {
     name: 'Client C',
     role: 'Project Manager',
     quote: 'Reliable, detail-oriented, and proactive with solutions.',
+    rating: 4,
   },
 ];
 
 const Testimonials = () => {
   const sectionRef = useRef<HTMLDivElement | null>(null);
-  const cardRef = useRef<HTMLDivElement | null>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
+  const [carouselIndex, setCarouselIndex] = useState(0);
+  const [carouselHovered, setCarouselHovered] = useState(false);
 
   useLayoutEffect(() => {
     if (prefersReducedMotion) return;
@@ -51,21 +64,31 @@ const Testimonials = () => {
   }, [prefersReducedMotion]);
 
   useEffect(() => {
-    if (prefersReducedMotion) return;
-    const interval = window.setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % testimonials.length);
-    }, 4500);
-    return () => window.clearInterval(interval);
-  }, [prefersReducedMotion]);
+    if (!carouselApi) return;
+    const onSelect = () => setCarouselIndex(carouselApi.selectedScrollSnap());
+    carouselApi.on('select', onSelect);
+    onSelect();
+    return () => carouselApi.off('select', onSelect);
+  }, [carouselApi]);
 
   useEffect(() => {
-    if (prefersReducedMotion || !cardRef.current) return;
-    gsap.fromTo(
-      cardRef.current,
-      { autoAlpha: 0, y: 12 },
-      { autoAlpha: 1, y: 0, duration: 0.5, ease: 'power2.out' }
-    );
-  }, [activeIndex, prefersReducedMotion]);
+    if (!carouselApi || prefersReducedMotion || carouselHovered) return;
+    const interval = window.setInterval(() => {
+      carouselApi.scrollNext();
+    }, 3600);
+    return () => window.clearInterval(interval);
+  }, [carouselApi, prefersReducedMotion, carouselHovered]);
+
+  const getSlideClass = (index: number) => {
+    const total = testimonials.length;
+    if (total === 0) return 'testi-cover';
+    let delta = (index - carouselIndex + total) % total;
+    if (delta > total / 2) delta -= total;
+    if (delta === 0) return 'testi-cover is-active';
+    if (delta === -1) return 'testi-cover is-left';
+    if (delta === 1) return 'testi-cover is-right';
+    return 'testi-cover is-far';
+  };
 
   return (
     <section id="testimonials" ref={sectionRef} className="relative overflow-hidden py-24">
@@ -73,34 +96,49 @@ const Testimonials = () => {
         <div className="mx-auto max-w-5xl">
           <div className="testimonials-reveal text-center">
             <h2 className="text-4xl font-semibold md:text-5xl">
-              Client <span className="gradient-text">Testimonials</span>
+              Client <span>Testimonials</span>
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
               Feedback from collaborations and real-world builds.
             </p>
           </div>
 
-          <div className="testimonials-reveal mt-12">
-            <div
-              ref={cardRef}
-              className="rounded-3xl border border-border/60 bg-card/60 p-8 text-center shadow-[0_22px_70px_-40px_rgba(0,0,0,0.8)]"
-            >
-              <p className="text-lg text-muted-foreground">“{testimonials[activeIndex].quote}”</p>
-              <div className="mt-6 text-sm font-semibold text-foreground">
-                {testimonials[activeIndex].name}
-              </div>
-              <div className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-                {testimonials[activeIndex].role}
-              </div>
-            </div>
+          <div
+            className="testimonials-reveal mt-12"
+            onMouseEnter={() => setCarouselHovered(true)}
+            onMouseLeave={() => setCarouselHovered(false)}
+          >
+            <Carousel setApi={setCarouselApi} opts={{ loop: true, align: 'center' }} className="relative">
+              <CarouselContent className="-ml-6">
+                {testimonials.map((item, index) => (
+                  <CarouselItem key={item.name} className="pl-6 md:basis-1/2 lg:basis-1/3">
+                    <div className={`${getSlideClass(index)} glass-card glass-hover rounded-3xl p-7 text-center`}>
+                      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-border/40 bg-background/50 text-xl">
+                        “
+                      </div>
+                      <p className="mt-4 text-sm text-muted-foreground">“{item.quote}”</p>
+                      <div className="mt-5 text-sm font-semibold text-foreground">{item.name}</div>
+                      <div className="text-xs uppercase tracking-[0.3em] text-muted-foreground">{item.role}</div>
+                      <div className="mt-3 flex justify-center gap-1 text-primary">
+                        {Array.from({ length: item.rating }).map((_, i) => (
+                          <Star key={i} className="h-3.5 w-3.5 fill-current" />
+                        ))}
+                      </div>
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="glass-button" />
+              <CarouselNext className="glass-button" />
+            </Carousel>
 
             <div className="mt-6 flex justify-center gap-2">
               {testimonials.map((_, index) => (
                 <button
                   key={index}
-                  onClick={() => setActiveIndex(index)}
+                  onClick={() => carouselApi?.scrollTo(index)}
                   className={`h-2.5 w-2.5 rounded-full transition-all ${
-                    activeIndex === index ? 'bg-primary' : 'bg-muted/60'
+                    carouselIndex === index ? 'bg-primary' : 'bg-muted/60'
                   }`}
                   aria-label={`Show testimonial ${index + 1}`}
                 />

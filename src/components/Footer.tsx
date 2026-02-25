@@ -43,7 +43,7 @@ const Footer = () => {
                 href={social.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex h-10 w-10 items-center justify-center rounded-xl border border-border/60 bg-background/70 text-muted-foreground transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:text-primary"
+                className="glass-card glass-hover flex h-10 w-10 items-center justify-center rounded-xl text-muted-foreground"
               >
                 <social.icon className="h-4 w-4" />
               </a>
