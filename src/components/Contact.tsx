@@ -1,27 +1,78 @@
-import { motion } from 'framer-motion';
-import { useInView } from 'framer-motion';
-import { useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Github, Linkedin, Mail } from 'lucide-react';
+import { Github, Linkedin, Mail, MessageCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const Contact = () => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true });
+  const sectionRef = useRef<HTMLDivElement | null>(null);
   const { toast } = useToast();
-  
+  const prefersReducedMotion = usePrefersReducedMotion();
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    message: ''
+    message: '',
+  });
+
+  const [touched, setTouched] = useState({
+    name: false,
+    email: false,
+    message: false,
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  useLayoutEffect(() => {
+    if (prefersReducedMotion) return;
+    if (!sectionRef.current) return;
+
+    const ctx = gsap.context(() => {
+      gsap.from('.contact-reveal', {
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top 70%',
+        },
+        y: 30,
+        autoAlpha: 0,
+        duration: 0.8,
+        stagger: 0.12,
+        ease: 'power3.out',
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, [prefersReducedMotion]);
+
+  const getValidationErrors = (values: typeof formData, useTouched: boolean) => ({
+    name:
+      (!useTouched || touched.name) && values.name.trim().length < 2
+        ? 'Please enter your name.'
+        : '',
+    email:
+      (!useTouched || touched.email) && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)
+        ? 'Enter a valid email address.'
+        : '',
+    message:
+      (!useTouched || touched.message) && values.message.trim().length < 10
+        ? 'Message should be at least 10 characters.'
+        : '',
+  });
+
+  const errors = getValidationErrors(formData, true);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setTouched({ name: true, email: true, message: true });
+    const submitErrors = getValidationErrors(formData, false);
+    if (Object.values(submitErrors).some(Boolean)) return;
+
     setIsSubmitting(true);
 
     try {
@@ -48,6 +99,7 @@ const Contact = () => {
         description: "Thanks for reaching out. I'll get back to you soon.",
       });
       setFormData({ name: '', email: '', message: '' });
+      setTouched({ name: false, email: false, message: false });
     } catch (error) {
       const subject = encodeURIComponent(`Portfolio Contact: ${formData.name}`);
       const body = encodeURIComponent(
@@ -67,69 +119,44 @@ const Contact = () => {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleBlur = (field: keyof typeof touched) => {
+    setTouched((prev) => ({
+      ...prev,
+      [field]: true,
     }));
   };
 
   const socialLinks = [
-    { icon: Github, href: 'https://github.com/cornetto999', label: 'GitHub', color: 'hover:text-primary' },
-    { icon: Linkedin, href: '#', label: 'LinkedIn', color: 'hover:text-secondary' },
-    { icon: Mail, href: 'mailto:roayafrancisjake@gmail.com', label: 'Email', color: 'hover:text-primary' },
+    { icon: Github, href: 'https://github.com/cornetto999', label: 'GitHub' },
+    { icon: Linkedin, href: '#', label: 'LinkedIn' },
+    { icon: Mail, href: 'mailto:roayafrancisjake@gmail.com', label: 'Email' },
+    { icon: MessageCircle, href: '#', label: 'WhatsApp' },
   ];
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6 }
-    }
-  };
-
   return (
-    <section id="contact" ref={ref} className="py-20 relative overflow-hidden">
+    <section id="contact" ref={sectionRef} className="relative overflow-hidden py-24">
       <div className="container mx-auto px-4">
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          className="max-w-4xl mx-auto"
-        >
-          <motion.h2
-            variants={itemVariants}
-            className="text-4xl md:text-5xl font-bold text-center mb-4"
-          >
-            Get In <span className="gradient-text">Touch</span>
-          </motion.h2>
-          
-          <motion.p
-            variants={itemVariants}
-            className="text-muted-foreground text-center mb-16 max-w-2xl mx-auto"
-          >
-            Have a project in mind or want to collaborate? I'd love to hear from you. 
-            Let's create something amazing together.
-          </motion.p>
+        <div className="mx-auto max-w-5xl">
+          <div className="contact-reveal text-center">
+            <h2 className="text-4xl font-semibold md:text-5xl">
+              Get In <span className="gradient-text">Touch</span>
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
+              Let’s build something great together. Have a project in mind or want to collaborate? I’d love to hear from
+              you.
+            </p>
+          </div>
 
-          <div className="grid lg:grid-cols-2 gap-16">
-            {/* Contact Form */}
-            <motion.div
-              variants={itemVariants}
-              className="rounded-3xl border border-border/70 bg-card/60 backdrop-blur-xl p-6 md:p-8 shadow-[0_18px_50px_-28px_hsl(var(--primary)/0.65)]"
-            >
-              <h3 className="text-2xl font-semibold mb-6">Send me a message</h3>
-              <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="contact-reveal mt-16 grid gap-12 lg:grid-cols-2">
+            <div className="rounded-3xl border border-border/60 bg-card/60 p-6 backdrop-blur-xl shadow-[0_18px_50px_-28px_hsl(var(--primary)/0.6)] md:p-8">
+              <h3 className="text-2xl font-semibold">Send me a message</h3>
+              <form onSubmit={handleSubmit} className="mt-6 space-y-5">
                 <div>
                   <Input
                     type="text"
@@ -137,9 +164,13 @@ const Contact = () => {
                     placeholder="Your Name"
                     value={formData.name}
                     onChange={handleChange}
+                    onBlur={() => handleBlur('name')}
                     required
-                    className="h-12 rounded-xl border-border/60 bg-background/70 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary/70 transition-all"
+                    className={`h-12 rounded-xl border-border/60 bg-background/70 focus-visible:ring-2 ${
+                      errors.name ? 'border-destructive/60 focus-visible:ring-destructive/40' : 'focus-visible:ring-primary/40'
+                    }`}
                   />
+                  {errors.name && <p className="mt-2 text-xs text-destructive">{errors.name}</p>}
                 </div>
                 <div>
                   <Input
@@ -148,9 +179,13 @@ const Contact = () => {
                     placeholder="Your Email"
                     value={formData.email}
                     onChange={handleChange}
+                    onBlur={() => handleBlur('email')}
                     required
-                    className="h-12 rounded-xl border-border/60 bg-background/70 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary/70 transition-all"
+                    className={`h-12 rounded-xl border-border/60 bg-background/70 focus-visible:ring-2 ${
+                      errors.email ? 'border-destructive/60 focus-visible:ring-destructive/40' : 'focus-visible:ring-primary/40'
+                    }`}
                   />
+                  {errors.email && <p className="mt-2 text-xs text-destructive">{errors.email}</p>}
                 </div>
                 <div>
                   <Textarea
@@ -158,93 +193,79 @@ const Contact = () => {
                     placeholder="Your Message"
                     value={formData.message}
                     onChange={handleChange}
+                    onBlur={() => handleBlur('message')}
                     required
                     rows={6}
-                    className="rounded-xl border-border/60 bg-background/70 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary/70 transition-all resize-none"
+                    className={`rounded-xl border-border/60 bg-background/70 focus-visible:ring-2 resize-none ${
+                      errors.message
+                        ? 'border-destructive/60 focus-visible:ring-destructive/40'
+                        : 'focus-visible:ring-primary/40'
+                    }`}
                   />
+                  {errors.message && <p className="mt-2 text-xs text-destructive">{errors.message}</p>}
                 </div>
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full h-12 text-base rounded-xl bg-[linear-gradient(135deg,hsl(var(--primary)),hsl(var(--secondary)))] text-primary-foreground hover:opacity-90 transition-all shadow-[0_12px_30px_-15px_hsl(var(--primary)/0.8)]"
+                  className="h-12 w-full rounded-xl bg-[linear-gradient(135deg,hsl(var(--primary)),hsl(var(--secondary)))] text-base text-primary-foreground shadow-[0_12px_30px_-15px_hsl(var(--primary)/0.8)]"
                 >
                   {isSubmitting ? 'Sending...' : 'Send Message'}
                 </Button>
               </form>
-            </motion.div>
+            </div>
 
-            {/* Contact Info */}
-            <motion.div
-              variants={itemVariants}
-              className="space-y-8 rounded-3xl border border-border/70 bg-card/50 backdrop-blur-xl p-6 md:p-8"
-            >
+            <div className="contact-reveal space-y-6 rounded-3xl border border-border/60 bg-card/50 p-6 backdrop-blur-xl md:p-8">
               <div>
-                <h3 className="text-2xl font-semibold mb-6">Let's connect</h3>
-                <div className="space-y-4">
-                  <p className="text-muted-foreground leading-relaxed">
-                    I'm always interested in new opportunities, interesting projects, 
-                    and great conversations. Whether you're looking to hire, collaborate, 
-                    or just want to say hello, feel free to reach out.
-                  </p>
+                <h3 className="text-2xl font-semibold">Let's connect</h3>
+                <p className="mt-4 text-muted-foreground">
+                  I'm always interested in new opportunities, interesting projects, and great conversations. Whether
+                  you're looking to hire, collaborate, or just want to say hello, feel free to reach out.
+                </p>
+                <div className="mt-6 space-y-3 text-sm">
                   <div className="flex items-center gap-3">
-                    <Mail className="w-5 h-5 text-primary" />
+                    <Mail className="h-5 w-5 text-primary" />
                     <span>roayafrancisjake@gmail.com</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="w-5 h-5 text-primary flex items-center justify-center">📍</span>
+                    <span className="flex h-5 w-5 items-center justify-center text-primary">📍</span>
                     <span> Talakag, Bukidnon, Mindanao, Philippines 8708 </span>
                   </div>
                 </div>
               </div>
 
-              {/* Social Links */}
               <div>
-                <h4 className="text-lg font-semibold mb-4">Follow me</h4>
-                <div className="flex gap-4">
+                <h4 className="text-lg font-semibold">Follow me</h4>
+                <div className="mt-4 flex flex-wrap gap-3">
                   {socialLinks.map((social) => (
-                    <motion.a
+                    <a
                       key={social.label}
                       href={social.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`w-12 h-12 rounded-xl border border-border/70 bg-background/70 flex items-center justify-center text-muted-foreground ${social.color} hover:bg-primary/10 hover:border-primary/40 transition-all duration-300 magnetic-hover`}
-                      whileHover={{ 
-                        scale: 1.2, 
-                        y: -3,
-                        rotate: [0, -5, 5, 0],
-                        boxShadow: "0 0 25px hsl(var(--primary) / 0.5)"
-                      }}
-                      whileTap={{ scale: 0.95 }}
-                      transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                      className="flex h-11 w-11 items-center justify-center rounded-xl border border-border/60 bg-background/70 text-muted-foreground transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:text-primary"
                     >
-                      <social.icon className="w-5 h-5" />
-                    </motion.a>
+                      <social.icon className="h-5 w-5" />
+                    </a>
                   ))}
                 </div>
               </div>
 
-              {/* Call to Action */}
-              <motion.div
-                className="p-6 rounded-2xl border border-border/70 bg-background/60"
-                whileHover={{ scale: 1.02 }}
-              >
-                <h4 className="text-lg font-semibold mb-2">Ready to start a project?</h4>
-                <p className="text-muted-foreground mb-4">
-                  I'm available for freelance work and exciting collaborations.
-                </p>
+              <div className="rounded-2xl border border-border/60 bg-background/60 p-6">
+                <h4 className="text-lg font-semibold">Ready to start a project?</h4>
+                <p className="mt-2 text-muted-foreground">I'm available for freelance work and exciting collaborations.</p>
                 <Button
                   variant="outline"
-                  className="border-primary/40 bg-card/70 text-primary hover:bg-primary hover:text-primary-foreground rounded-xl"
+                  className="mt-4 rounded-xl border-primary/40 bg-card/70 text-primary hover:bg-primary hover:text-primary-foreground"
                   asChild
                 >
                   <a href="/resume.pdf" download target="_blank" rel="noopener noreferrer">
                     Download Resume
                   </a>
                 </Button>
-              </motion.div>
-            </motion.div>
+              </div>
+            </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

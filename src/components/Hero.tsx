@@ -1,11 +1,88 @@
-import { motion } from 'framer-motion';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import ParticleBackground from '@/components/ParticleBackground';
 import heroAvatar from '@/assets/profile.png';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion';
+
+const roles = ['Full-Stack Developer', 'Frontend Specialist', 'System Builder'];
+
+gsap.registerPlugin(ScrollTrigger);
 
 const Hero = () => {
+  const heroRef = useRef<HTMLDivElement | null>(null);
+  const [displayText, setDisplayText] = useState('');
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const [roleIndex, setRoleIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const nameText = 'Francis Jake Roaya';
-  const titleText = 'Frontend Developer specializing in System Development, passionate about responsive design and web performance. I specialize in building sleek and scalable user interfaces using Next.js, Tailwind CSS, and other programming languages. Currently pursuing a Bachelor of Science in Information Technology (BSIT) at Phinma Cagayan de Oro College, I\'m dedicated to learning and growing as a developer while creating modern web experiences.';
+  const titleText =
+    "Frontend Developer specializing in System Development, passionate about responsive design and web performance. I specialize in building sleek and scalable user interfaces using Next.js, Tailwind CSS, and other programming languages. Currently pursuing a Bachelor of Science in Information Technology (BSIT) at Phinma Cagayan de Oro College, I'm dedicated to learning and growing as a developer while creating modern web experiences.";
+
+  useEffect(() => {
+    const currentRole = roles[roleIndex % roles.length];
+    const speed = isDeleting ? 40 : 90;
+    let pauseTimeout: number | undefined;
+
+    const timeout = window.setTimeout(() => {
+      if (!isDeleting) {
+        const next = currentRole.slice(0, displayText.length + 1);
+        setDisplayText(next);
+        if (next === currentRole) {
+          pauseTimeout = window.setTimeout(() => setIsDeleting(true), 1200);
+        }
+      } else {
+        const next = currentRole.slice(0, displayText.length - 1);
+        setDisplayText(next);
+        if (next === '') {
+          setIsDeleting(false);
+          setRoleIndex((prev) => (prev + 1) % roles.length);
+        }
+      }
+    }, speed);
+
+    return () => {
+      window.clearTimeout(timeout);
+      if (pauseTimeout) window.clearTimeout(pauseTimeout);
+    };
+  }, [displayText, isDeleting, roleIndex]);
+
+  useLayoutEffect(() => {
+    if (prefersReducedMotion) return;
+    if (!heroRef.current) return;
+
+    const ctx = gsap.context(() => {
+      gsap.from('.hero-fade', {
+        y: 30,
+        autoAlpha: 0,
+        duration: 0.9,
+        stagger: 0.12,
+        ease: 'power3.out',
+      });
+
+      gsap.from('.hero-avatar', {
+        x: 40,
+        autoAlpha: 0,
+        duration: 1,
+        ease: 'power3.out',
+        delay: 0.2,
+      });
+
+      gsap.to('.hero-orb', {
+        y: (i) => (i % 2 === 0 ? -40 : 30),
+        scrollTrigger: {
+          trigger: heroRef.current,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 0.6,
+        },
+      });
+    }, heroRef);
+
+    return () => ctx.revert();
+  }, [prefersReducedMotion]);
 
   const scrollToSection = (href: string) => {
     const element = document.querySelector(href);
@@ -15,123 +92,86 @@ const Hero = () => {
   };
 
   return (
-    <section id="home" className="min-h-screen flex items-center justify-center relative overflow-hidden">
-      {/* Particle background */}
-      <ParticleBackground />
-      
-      {/* Animated background gradient */}
-      <div className="absolute inset-0 hero-gradient opacity-30" />
-      
-      {/* Floating elements */}
-      <div className="absolute top-20 left-10 w-20 h-20 bg-primary/20 rounded-full blur-xl animate-float" />
-      <div className="absolute bottom-20 right-10 w-32 h-32 bg-secondary/20 rounded-full blur-xl animate-float [animation-delay:1s]" />
-      <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-tertiary/20 rounded-full blur-xl animate-float [animation-delay:2s]" />
+    <section
+      id="home"
+      className="relative flex min-h-screen items-center justify-center overflow-hidden pb-16 pt-28"
+    >
+      {!prefersReducedMotion && <ParticleBackground />}
 
-      <div className="container mx-auto px-4 z-10 relative">
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
-          {/* Content */}
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            className="flex-1 text-center lg:text-left"
-          >
-            <motion.p
-              className="text-sm md:text-base font-medium tracking-[0.25em] text-muted-foreground/80 mb-4"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.1 }}
-            >
-          
-            </motion.p>
+      <div className="absolute inset-0 hero-gradient opacity-40" />
+      <div className="hero-orb absolute -top-10 left-10 h-24 w-24 rounded-full bg-primary/20 blur-2xl" />
+      <div className="hero-orb absolute bottom-10 right-10 h-32 w-32 rounded-full bg-secondary/20 blur-2xl" />
+      <div className="hero-orb absolute top-1/3 left-1/3 h-16 w-16 rounded-full bg-tertiary/20 blur-xl" />
 
-            <motion.h1
-              className="text-5xl md:text-7xl font-bold mb-6 relative"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
-              <span className="gradient-text">
-                {nameText}
+      <div ref={heroRef} className="container relative z-10 mx-auto px-4">
+        <div className="grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
+          <div className="order-2 text-center lg:order-1 lg:text-left">
+            <div className="hero-fade hidden flex-wrap items-center gap-3 lg:flex">
+              <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1 text-xs uppercase tracking-[0.3em] text-primary">
+                Open to work
               </span>
-            </motion.h1>
-            
-            <motion.p
-              className="text-lg text-muted-foreground mb-8 max-w-2xl"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-            >
+              <span className="inline-flex items-center gap-2 rounded-full border border-secondary/30 bg-secondary/10 px-4 py-1 text-xs uppercase tracking-[0.3em] text-secondary">
+                Currently working on system tools
+              </span>
+            </div>
+            <h1 className="hero-fade mt-6 text-4xl font-semibold leading-tight text-foreground sm:text-5xl md:text-6xl">
+              <span className="gradient-text">{nameText}</span>
+            </h1>
+            <p className="hero-fade mt-4 text-lg text-muted-foreground">
+              <span className="text-primary">{displayText || roles[0]}</span>
+              <span className="ml-1 inline-block h-5 w-[2px] animate-caret bg-primary align-middle" />
+            </p>
+            <p className="hero-fade mt-6 max-w-2xl text-base text-muted-foreground">
               {titleText}
-            </motion.p>
-            
-            <motion.div
-              className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.8 }}
-            >
+            </p>
+            <div className="hero-fade mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
               <Button
                 onClick={() => scrollToSection('#projects')}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-lg rounded-xl magnetic-hover glow-hover"
+                className="magnetic-hover h-12 rounded-full bg-primary px-8 text-base text-primary-foreground shadow-[0_12px_30px_-15px_hsl(var(--primary)/0.8)] hover:bg-primary/90"
               >
-                View My Work
+                View Projects
               </Button>
               <Button
                 variant="outline"
                 onClick={() => scrollToSection('#contact')}
-                className="border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-6 text-lg rounded-xl magnetic-hover"
+                className="magnetic-hover h-12 rounded-full border-primary/40 bg-transparent px-8 text-base text-primary hover:bg-primary hover:text-primary-foreground"
               >
-                Get In Touch
+                Contact Me
               </Button>
-            </motion.div>
-          </motion.div>
+              <Button
+                variant="ghost"
+                className="magnetic-hover h-12 rounded-full border border-border/60 px-6 text-base"
+                asChild
+              >
+                <a href="/resume.pdf" download>
+                  Download CV
+                </a>
+              </Button>
+            </div>
+          </div>
 
-          {/* Avatar */}
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="flex-1 flex justify-center lg:justify-end"
-          >
-            <motion.div
-              className="relative"
-              whileHover={{ 
-                scale: 1.05,
-                filter: "blur(2px)"
-              }}
-              transition={{ 
-                type: "spring", 
-                stiffness: 300,
-                duration: 0.3
-              }}
-            >
-              <div className="w-80 h-80 rounded-full overflow-hidden glass-card p-2">
+          <div className="hero-avatar order-1 flex flex-col items-center justify-center gap-4 lg:order-2 lg:items-end lg:justify-end">
+            <div className="hero-fade flex flex-wrap items-center justify-center gap-3 lg:hidden">
+              <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1 text-xs uppercase tracking-[0.3em] text-primary">
+                Open to work
+              </span>
+              <span className="inline-flex items-center gap-2 rounded-full border border-secondary/30 bg-secondary/10 px-4 py-1 text-xs uppercase tracking-[0.3em] text-secondary">
+                Currently working on system tools
+              </span>
+            </div>
+            <div className="relative">
+              <div className="absolute -inset-6 rounded-full bg-gradient-to-br from-primary/20 via-transparent to-secondary/20 blur-2xl" />
+              <div className="relative h-72 w-72 overflow-hidden rounded-full border border-border/60 bg-card/70 p-2 shadow-[0_18px_50px_-30px_rgba(0,0,0,0.8)] sm:h-80 sm:w-80">
                 <img
                   src={heroAvatar}
-                  alt=" Francis Jake Roaya"
-                  className="w-full h-full object-cover rounded-full"
+                  alt="Francis Jake Roaya"
+                  className="h-full w-full rounded-full object-cover"
+                  loading="lazy"
                 />
               </div>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         </div>
-
-        {/* Scroll indicator */}
-        <motion.div
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1.2 }}
-        >
-          <motion.div
-            className="w-6 h-10 border-2 border-primary rounded-full flex justify-center"
-            animate={{ y: [0, 10, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          >
-            <div className="w-1 h-3 bg-primary rounded-full mt-2" />
-          </motion.div>
-        </motion.div>
       </div>
     </section>
   );

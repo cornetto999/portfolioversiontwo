@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useIsMobile } from '../hooks/use-mobile';
+import { usePrefersReducedMotion } from '../hooks/use-prefers-reduced-motion';
 
 const CustomCursor = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const isMobile = useIsMobile();
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   useEffect(() => {
     const updateMousePosition = (e: MouseEvent) => {
@@ -39,7 +41,7 @@ const CustomCursor = () => {
   }, []);
 
   // Don't show custom cursor on mobile devices
-  if (isMobile || !isVisible) return null;
+  if (isMobile || prefersReducedMotion || !isVisible) return null;
 
   return (
     <>
