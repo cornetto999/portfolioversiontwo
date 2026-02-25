@@ -92,25 +92,23 @@ export const useGitHubStats = (username: string) => {
           })
         );
 
-        if (totalBytes === 0) {
-          throw new Error('No language data found from GitHub repositories.');
-        }
-
-        const languages = Object.entries(languageBytes)
-          .map(([name, bytes]) => ({
-            name,
-            percentage: Number(((bytes / totalBytes) * 100).toFixed(1)),
-            color: getLanguageColor(name),
-          }))
-          .sort((a, b) => b.percentage - a.percentage)
-          .slice(0, 10);
+        const languages = totalBytes
+          ? Object.entries(languageBytes)
+              .map(([name, bytes]) => ({
+                name,
+                percentage: Number(((bytes / totalBytes) * 100).toFixed(1)),
+                color: getLanguageColor(name),
+              }))
+              .sort((a, b) => b.percentage - a.percentage)
+              .slice(0, 10)
+          : [];
 
         setStats({
           languages,
           totalRepos: ownRepos.length,
           totalStars,
           isLoading: false,
-          error: null,
+          error: totalBytes === 0 ? 'Language data unavailable. Repo stats loaded.' : null,
         });
       } catch (error) {
         const errorMessage =
