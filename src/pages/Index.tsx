@@ -8,7 +8,6 @@ import Services from '@/components/Services';
 import Timeline from '@/components/Timeline';
 import Testimonials from '@/components/Testimonials';
 import Contact from '@/components/Contact';
-import CustomCursor from '@/components/CustomCursor';
 import FloatingAvatarBot from '@/components/FloatingAvatarBot';
 import Preloader from '@/components/Preloader';
 import ScrollProgress from '@/components/ScrollProgress';
@@ -24,9 +23,8 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background cursor-none">
+    <div className="min-h-screen bg-background">
       {loading && <Preloader onComplete={() => setLoading(false)} />}
-      <CustomCursor />
       <ScrollProgress />
       <Navbar />
       <main className="relative">

@@ -1,8 +1,10 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { ExternalLink, Github, Sparkles } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { ExternalLink, Filter, Github, Info, Sparkles, X } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
 import {
   Dialog,
   DialogContent,
@@ -44,11 +46,15 @@ type Project = {
 const Projects = () => {
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [previewProject, setPreviewProject] = useState<Project | null>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
   useGsapCards(sectionRef, { selector: '.project-card', start: 'top 80%', stagger: 0.14, once: true });
   const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
   const [carouselHovered, setCarouselHovered] = useState(false);
   const [carouselIndex, setCarouselIndex] = useState(0);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [activeCategory, setActiveCategory] = useState<Project['category'] | 'All'>('All');
+  const [featuredOnly, setFeaturedOnly] = useState(false);
 
   const projects: Project[] = [
     {
@@ -163,7 +169,24 @@ const Projects = () => {
     (a, b) => Number(b.featured) - Number(a.featured)
   );
 
-  const featuredProjects = displayProjects;
+  const categories: Array<Project['category'] | 'All'> = [
+    'All',
+    ...Array.from(new Set(projects.map((project) => project.category))),
+  ];
+
+  const normalizedSearchTerm = searchTerm.trim().toLowerCase();
+
+  const filteredProjects = displayProjects.filter((project) => {
+    const matchesCategory = activeCategory === 'All' || project.category === activeCategory;
+    const matchesFeatured = !featuredOnly || project.featured;
+    const matchesSearch =
+      normalizedSearchTerm.length === 0 ||
+      project.title.toLowerCase().includes(normalizedSearchTerm) ||
+      project.description.toLowerCase().includes(normalizedSearchTerm) ||
+      project.technologies.some((tech) => tech.toLowerCase().includes(normalizedSearchTerm));
+
+    return matchesCategory && matchesFeatured && matchesSearch;
+  });
 
   useLayoutEffect(() => {
     if (prefersReducedMotion) return;
@@ -197,11 +220,23 @@ const Projects = () => {
 
   useEffect(() => {
     if (!carouselApi || prefersReducedMotion || carouselHovered) return;
+    if (filteredProjects.length <= 1) return;
     const interval = window.setInterval(() => {
       carouselApi.scrollNext();
     }, 3200);
     return () => window.clearInterval(interval);
-  }, [carouselApi, prefersReducedMotion, carouselHovered]);
+  }, [carouselApi, prefersReducedMotion, carouselHovered, filteredProjects.length]);
+
+  useEffect(() => {
+    if (filteredProjects.length === 0) {
+      setCarouselIndex(0);
+      return;
+    }
+    if (carouselApi) {
+      carouselApi.scrollTo(0);
+    }
+    setCarouselIndex(0);
+  }, [carouselApi, filteredProjects.length, searchTerm, activeCategory, featuredOnly]);
 
   const handleProjectClick = (url: string) => {
     if (url && url !== '#') {
@@ -209,8 +244,14 @@ const Projects = () => {
     }
   };
 
+  const openLiveDemoPreview = (project: Project) => {
+    if (!project.liveUrl || project.liveUrl === '#') return;
+    setPreviewProject(project);
+    setSelectedProject(null);
+  };
+
   const getSlideClass = (index: number) => {
-    const total = featuredProjects.length;
+    const total = filteredProjects.length;
     if (total === 0) return 'cover-slide';
     let delta = (index - carouselIndex + total) % total;
     if (delta > total / 2) delta -= total;
@@ -226,7 +267,7 @@ const Projects = () => {
         <div className="mx-auto max-w-6xl">
           <div className="projects-reveal text-center">
             <h2 className="text-4xl font-semibold md:text-5xl">
-              Featured <span>Projects</span>
+              Best <span>Projects</span>
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
               A showcase of my recent work and creative projects that demonstrate my technical skills and passion for
@@ -234,7 +275,45 @@ const Projects = () => {
             </p>
           </div>
 
-          {featuredProjects.length > 0 && (
+          <div className="projects-reveal mt-10 rounded-3xl border border-border/60 bg-card/30 p-5 backdrop-blur-lg md:p-6">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex w-full items-center gap-3 lg:max-w-md">
+                <Filter className="h-4 w-4 text-muted-foreground" />
+                <Input
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Search by project, stack, or keyword..."
+                  className="glass-input h-11 rounded-xl"
+                />
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                {categories.map((category) => (
+                  <Button
+                    key={category}
+                    size="sm"
+                    variant={activeCategory === category ? 'default' : 'outline'}
+                    className="rounded-full"
+                    onClick={() => setActiveCategory(category)}
+                  >
+                    {category}
+                  </Button>
+                ))}
+                <Button
+                  size="sm"
+                  variant={featuredOnly ? 'default' : 'outline'}
+                  className="rounded-full"
+                  onClick={() => setFeaturedOnly((prev) => !prev)}
+                >
+                  Featured only
+                </Button>
+              </div>
+            </div>
+            <p className="mt-3 text-sm text-muted-foreground">
+              Showing {filteredProjects.length} of {projects.length} projects
+            </p>
+          </div>
+
+          {filteredProjects.length > 0 ? (
             <div
               className="projects-reveal mt-12"
               onMouseEnter={() => setCarouselHovered(true)}
@@ -246,12 +325,15 @@ const Projects = () => {
                 className="relative"
               >
                 <CarouselContent className="-ml-6">
-                  {featuredProjects.map((project, index) => (
+                  {filteredProjects.map((project, index) => {
+                    const hasLiveDemo = project.liveUrl && project.liveUrl !== '#';
+                    const hasGitHub = !!project.githubUrl && project.githubUrl !== '#';
+                    return (
                     <CarouselItem
                       key={project.title}
                       className="pl-6 md:basis-1/2 lg:basis-1/3"
                     >
-                      <div className={`${getSlideClass(index)} glass-card glass-hover flex h-full flex-col overflow-hidden rounded-3xl`}>
+                      <div className={`${getSlideClass(index)} project-card glass-card glass-hover flex h-full flex-col overflow-hidden rounded-3xl`}>
                         <div className="relative overflow-hidden">
                           <img
                             src={project.image}
@@ -261,9 +343,14 @@ const Projects = () => {
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
                           <div className="glass-badge absolute left-4 top-4 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold text-primary">
-                            <Sparkles className="h-3.5 w-3.5" />
-                            Featured
+                            {project.category}
                           </div>
+                          {project.featured && (
+                            <div className="glass-badge absolute right-4 top-4 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold text-primary">
+                              <Sparkles className="h-3.5 w-3.5" />
+                              Featured
+                            </div>
+                          )}
                         </div>
                         <div className="flex h-full flex-col p-5">
                           <h3 className="text-lg font-semibold">{project.title}</h3>
@@ -279,12 +366,22 @@ const Projects = () => {
                             <Button
                               size="sm"
                               className="glass-button w-full rounded-xl text-primary-foreground"
-                              onClick={() => handleProjectClick(project.liveUrl)}
+                              disabled={!hasLiveDemo}
+                              onClick={() => openLiveDemoPreview(project)}
                             >
                               <ExternalLink className="mr-2 h-4 w-4" />
-                              Live Demo
+                              {hasLiveDemo ? 'Live Demo' : 'Preview Soon'}
                             </Button>
-                            {project.githubUrl && project.githubUrl !== '#' && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="glass-button rounded-xl"
+                              onClick={() => setSelectedProject(project)}
+                              aria-label={`View details for ${project.title}`}
+                            >
+                              <Info className="h-4 w-4" />
+                            </Button>
+                            {hasGitHub && (
                               <Button
                                 size="sm"
                                 variant="outline"
@@ -298,14 +395,14 @@ const Projects = () => {
                         </div>
                       </div>
                     </CarouselItem>
-                  ))}
+                  )})}
                 </CarouselContent>
                 <CarouselPrevious className="glass-button" />
                 <CarouselNext className="glass-button" />
               </Carousel>
 
               <div className="mt-6 flex items-center justify-center gap-2">
-                {featuredProjects.map((_, index) => (
+                {filteredProjects.map((_, index) => (
                   <button
                     key={index}
                     onClick={() => carouselApi?.scrollTo(index)}
@@ -316,6 +413,24 @@ const Projects = () => {
                   />
                 ))}
               </div>
+            </div>
+          ) : (
+            <div className="projects-reveal mt-10 rounded-3xl border border-border/60 bg-card/30 p-10 text-center">
+              <h3 className="text-xl font-semibold">No projects match your filters.</h3>
+              <p className="mt-3 text-muted-foreground">
+                Try another keyword or category to explore the rest of my work.
+              </p>
+              <Button
+                className="glass-button mt-5 rounded-full"
+                variant="outline"
+                onClick={() => {
+                  setSearchTerm('');
+                  setActiveCategory('All');
+                  setFeaturedOnly(false);
+                }}
+              >
+                Reset filters
+              </Button>
             </div>
           )}
 
@@ -337,6 +452,12 @@ const Projects = () => {
                   className="h-48 w-full rounded-2xl object-cover"
                   loading="lazy"
                 />
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <span className="glass-badge rounded-full px-3 py-1">{selectedProject.category}</span>
+                  {selectedProject.featured && (
+                    <span className="glass-badge rounded-full px-3 py-1 text-primary">Featured project</span>
+                  )}
+                </div>
                 <p className="text-sm text-muted-foreground">{selectedProject.description}</p>
                 <div className="flex flex-wrap gap-2">
                   {selectedProject.technologies.map((tech) => (
@@ -346,13 +467,15 @@ const Projects = () => {
                   ))}
                 </div>
                 <div className="flex gap-3">
-                  <Button
-                    className="glass-button rounded-xl text-primary-foreground"
-                    onClick={() => handleProjectClick(selectedProject.liveUrl)}
-                  >
-                    <ExternalLink className="mr-2 h-4 w-4" />
-                    Live Demo
-                  </Button>
+                  {selectedProject.liveUrl && selectedProject.liveUrl !== '#' && (
+                    <Button
+                      className="glass-button rounded-xl text-primary-foreground"
+                      onClick={() => openLiveDemoPreview(selectedProject)}
+                    >
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      Live Demo
+                    </Button>
+                  )}
                   {selectedProject.caseStudyUrl && selectedProject.caseStudyUrl !== '#' && (
                     <Button
                       variant="outline"
@@ -378,6 +501,48 @@ const Projects = () => {
           )}
         </DialogContent>
       </Dialog>
+      {previewProject && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 p-4 backdrop-blur-md">
+          <div className="glass-card w-full max-w-6xl rounded-3xl border border-border/60 p-4 md:p-6">
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <h3 className="text-lg font-semibold md:text-xl">{previewProject.title} Live Demo</h3>
+              <Button
+                variant="outline"
+                size="icon"
+                className="glass-button rounded-full"
+                onClick={() => setPreviewProject(null)}
+                aria-label="Close live demo preview"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="space-y-4">
+              <AspectRatio
+                ratio={16 / 9}
+                className="overflow-hidden rounded-xl border border-border/60 bg-black/40"
+              >
+                <iframe
+                  src={previewProject.liveUrl}
+                  title={`${previewProject.title} live demo`}
+                  className="h-full w-full"
+                  loading="lazy"
+                  allow="fullscreen"
+                />
+              </AspectRatio>
+              <div className="flex items-center justify-between gap-3 text-sm text-muted-foreground">
+                <p>If embed is blocked by the site, use Open in New Tab.</p>
+                <Button
+                  variant="outline"
+                  className="glass-button rounded-xl"
+                  onClick={() => handleProjectClick(previewProject.liveUrl)}
+                >
+                  Open in New Tab
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };

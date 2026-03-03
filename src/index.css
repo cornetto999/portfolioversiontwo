@@ -50,8 +50,19 @@
     --glow-secondary: 0 0 30px hsl(270 95% 75% / 0.25);
     --glow-tertiary: 0 0 30px hsl(315 100% 70% / 0.25);
 
-    --glass-bg: rgba(255, 255, 255, 0.04);
-    --glass-border: rgba(255, 255, 255, 0.1);
+    --page-gradient:
+      radial-gradient(circle at 10% 10%, hsl(217 91% 60% / 0.18), transparent 45%),
+      radial-gradient(circle at 85% 15%, hsl(270 95% 75% / 0.14), transparent 42%),
+      linear-gradient(180deg, hsl(222 84% 4.9%), hsl(225 38% 8%));
+
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.24);
+    --glass-card-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.04));
+    --glass-card-shadow: 0 22px 52px -34px rgba(0, 0, 0, 0.78);
+    --glass-button-gradient: linear-gradient(135deg, rgba(16, 37, 78, 0.85), rgba(24, 158, 159, 0.7), rgba(253, 107, 114, 0.7));
+    --glass-button-text: #f8fafc;
+    --glass-navbar-bg: rgba(7, 10, 20, 0.32);
+    --glass-input-bg: rgba(15, 23, 42, 0.6);
     --glass-blur: blur(16px);
 
     --sidebar-background: 0 0% 98%;
@@ -65,11 +76,11 @@
   }
 
   .light {
-    --background: 0 0% 100%;
+    --background: 210 44% 95%;
     --foreground: 222 47% 11%;
-    --card: 0 0% 98%;
+    --card: 210 40% 98%;
     --card-foreground: 222 47% 11%;
-    --popover: 0 0% 100%;
+    --popover: 210 40% 98%;
     --popover-foreground: 222 47% 11%;
     --primary: 222 47% 40%;
     --primary-foreground: 0 0% 100%;
@@ -81,11 +92,22 @@
     --muted-foreground: 215 16% 46%;
     --accent: 225 70% 60%;
     --accent-foreground: 0 0% 100%;
-    --border: 210 40% 90%;
-    --input: 210 40% 90%;
+    --border: 214 32% 84%;
+    --input: 214 32% 84%;
     --ring: 222 47% 40%;
-    --glass-bg: rgba(255, 255, 255, 0.8);
-    --glass-border: rgba(15, 23, 42, 0.1);
+    --page-gradient:
+      radial-gradient(circle at 12% 8%, rgba(37, 99, 235, 0.22), transparent 42%),
+      radial-gradient(circle at 84% 16%, rgba(14, 165, 233, 0.2), transparent 44%),
+      linear-gradient(180deg, #e9f2ff 0%, #dce9ff 56%, #d5e4fb 100%);
+
+    --glass-bg: rgba(255, 255, 255, 0.18);
+    --glass-border: rgba(255, 255, 255, 0.62);
+    --glass-card-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.1));
+    --glass-card-shadow: 0 24px 50px -34px rgba(26, 54, 93, 0.3);
+    --glass-button-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0.14));
+    --glass-button-text: hsl(222 47% 24%);
+    --glass-navbar-bg: rgba(232, 243, 255, 0.3);
+    --glass-input-bg: rgba(255, 255, 255, 0.2);
     --brand-1: 30 64 175;
     --brand-2: 37 99 235;
   }
@@ -100,6 +122,8 @@
     @apply bg-background text-foreground font-sans;
     font-family: "Sora", system-ui, -apple-system, sans-serif;
     overflow-x: hidden;
+    background-image: var(--page-gradient);
+    background-attachment: fixed;
   }
 
   h1, h2, h3, h4 {
@@ -134,19 +158,15 @@ body.chatbot-open .portfolio-custom-cursor {
 
 @layer utilities {
   .cursor-magnetic {
-    cursor: none;
-  }
-
-  body {
-    cursor: none;
+    cursor: auto;
   }
 
   .glass-card {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+    background: var(--glass-card-gradient);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow: 0 18px 45px -30px rgba(0, 0, 0, 0.8);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-card-shadow);
     position: relative;
     color: hsl(var(--foreground));
     background-clip: padding-box;
@@ -159,48 +179,71 @@ body.chatbot-open .portfolio-custom-cursor {
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid color-mix(in srgb, var(--glass-border), white 45%);
     pointer-events: none;
     mask: linear-gradient(180deg, rgba(255, 255, 255, 0.6), transparent 70%);
   }
 
   .glass-button {
-    background: linear-gradient(135deg, rgba(16, 37, 78, 0.85), rgba(24, 158, 159, 0.7), rgba(253, 107, 114, 0.7));
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    box-shadow: 0 16px 40px -28px rgba(24, 158, 159, 0.6);
-    color: #f8fafc;
+    box-shadow: 0 14px 36px -28px rgba(15, 23, 42, 0.55);
+    color: var(--glass-button-text);
     background-clip: padding-box;
     overflow: hidden;
   }
 
+  .light .glass-card,
+  .light .glass-button,
+  .light .glass-navbar,
+  .light .glass-input {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.7),
+      0 14px 35px -26px rgba(26, 54, 93, 0.35);
+  }
+
+  .dark .glass-card,
+  .dark .glass-button,
+  .dark .glass-navbar,
+  .dark .glass-input {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.18),
+      0 16px 40px -28px rgba(0, 0, 0, 0.7);
+  }
+
   .brand-button {
-    background: linear-gradient(135deg, #10254e, #189e9f, #fd6b72);
-    color: #f8fafc;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    box-shadow: 0 16px 40px -28px rgba(24, 158, 159, 0.6);
+    background: var(--glass-bg);
+    color: hsl(var(--foreground));
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 14px 36px -28px rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
   }
 
   .brand-button:hover {
-    box-shadow: 0 22px 50px -28px rgba(24, 158, 159, 0.75);
+    background: hsl(var(--accent) / 0.14);
+    color: hsl(var(--foreground));
+    border-color: hsl(var(--accent) / 0.45);
+    box-shadow: 0 18px 40px -28px rgba(15, 23, 42, 0.62);
   }
 
   .brand-button-outline {
     background: transparent;
     color: hsl(var(--foreground));
-    border: 1px solid rgba(255, 255, 255, 0.22);
+    border: 1px solid hsl(var(--border));
   }
 
   .brand-button-outline:hover {
-    background: linear-gradient(135deg, rgba(16, 37, 78, 0.7), rgba(24, 158, 159, 0.55), rgba(253, 107, 114, 0.55));
-    color: #f8fafc;
-    border-color: rgba(255, 255, 255, 0.28);
+    background: hsl(var(--accent) / 0.14);
+    color: hsl(var(--foreground));
+    border-color: hsl(var(--accent) / 0.45);
   }
 
   .glass-input {
-    background: rgba(15, 23, 42, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: var(--glass-input-bg);
+    border: 1px solid var(--glass-border);
     backdrop-filter: blur(10px);
     color: hsl(var(--foreground));
   }
@@ -210,8 +253,8 @@ body.chatbot-open .portfolio-custom-cursor {
   }
 
   .glass-navbar {
-    background: rgba(7, 10, 20, 0.55);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--glass-navbar-bg);
+    border-bottom: 1px solid var(--glass-border);
     backdrop-filter: blur(18px);
   }
 

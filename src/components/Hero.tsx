@@ -111,7 +111,6 @@ const Hero = () => {
             </h1>
             <p className="hero-fade mt-4 text-lg text-muted-foreground">
               <span className="brand-gradient">{displayText || roles[0]}</span>
-              <span className="ml-1 inline-block h-5 w-[2px] animate-caret bg-primary align-middle" />
             </p>
             <p className="hero-fade mt-6 max-w-2xl text-base text-muted-foreground">
               {titleText}
