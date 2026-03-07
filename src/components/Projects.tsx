@@ -21,12 +21,12 @@ import {
 } from '@/components/ui/carousel';
 import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion';
 import { useGsapCards } from '@/hooks/use-gsap-cards';
-import project1 from '@/assets/e-boy.png';
-import project2 from '@/assets/who.png';
-import project3 from '@/assets/ytweb.png';
-import project4 from '@/assets/dtr.png';
-import project5 from '@/assets/luxera.png';
-import project6 from '@/assets/pos-sari.png';
+import project1 from '@/assets/e-boy.jpg';
+import project2 from '@/assets/who.jpg';
+import project3 from '@/assets/ytweb.jpg';
+import project4 from '@/assets/dtr.jpg';
+import project5 from '@/assets/luxera.jpg';
+import project6 from '@/assets/pos-sari.jpg';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -339,7 +339,9 @@ const Projects = () => {
                             src={project.image}
                             alt={project.title}
                             className="h-52 w-full object-cover transition-transform duration-500 hover:scale-105"
-                            loading="lazy"
+                            loading={index < 2 ? 'eager' : 'lazy'}
+                            decoding="async"
+                            fetchPriority={index < 2 ? 'high' : 'low'}
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
                           <div className="glass-badge absolute left-4 top-4 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold text-primary">
@@ -451,6 +453,7 @@ const Projects = () => {
                   alt={selectedProject.title}
                   className="h-48 w-full rounded-2xl object-cover"
                   loading="lazy"
+                  decoding="async"
                 />
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <span className="glass-badge rounded-full px-3 py-1">{selectedProject.category}</span>
