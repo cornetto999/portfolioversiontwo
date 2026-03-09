@@ -1,8 +1,8 @@
 import * as React from "react";
 
-import robotGif from "@/assets/Robot says hello.gif";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import robotGif from "@/assets/Robot says hello.gif";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -24,6 +24,7 @@ function safeJsonParse(value: string) {
 
 const STORAGE_KEY = "portfolio_chat_v1";
 const TTL_MS = 5 * 60 * 1000;
+const BOT_SIZE_CLASS = "h-20 w-20 sm:h-28 sm:w-28 lg:h-32 lg:w-32";
 const initialMessages: { id: string; from: "bot" | "user"; text: string }[] = [
   {
     id: "welcome",
@@ -154,20 +155,19 @@ const FloatingAvatarBot = () => {
     <div className="fixed bottom-4 right-4 z-50 pb-[env(safe-area-inset-bottom)] pr-[env(safe-area-inset-right)] sm:bottom-6 sm:right-6">
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button
-            variant="secondary"
-            size="icon"
-            className="h-auto w-auto rounded-none bg-transparent p-0 shadow-none hover:bg-transparent animate-float"
+          <button
+            type="button"
+            className="h-auto w-auto rounded-none border-0 !bg-transparent p-0 shadow-none ring-0 hover:!bg-transparent active:!bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=open]:!bg-transparent"
             aria-label="Open portfolio assistant"
           >
             <img
               src={robotGif}
               alt="Robot assistant"
-              className="h-16 w-16 object-contain sm:h-40 sm:w-40"
+              className={`${BOT_SIZE_CLASS} bg-transparent object-contain`}
             />
-          </Button>
+          </button>
         </DialogTrigger>
-        <DialogContent className="w-[calc(100vw-2rem)] max-w-none cursor-auto sm:max-w-md">
+        <DialogContent className="glass-card w-[calc(100vw-2rem)] max-w-none cursor-auto border-white/20 bg-transparent sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Portfolio Assistant</DialogTitle>
             <DialogDescription>
@@ -176,7 +176,7 @@ const FloatingAvatarBot = () => {
           </DialogHeader>
 
           <div className="flex h-[70vh] flex-col gap-3 cursor-auto sm:h-[60vh]">
-            <div className="flex-1 overflow-y-auto rounded-lg border bg-muted/10 p-4">
+            <div className="flex-1 overflow-y-auto rounded-lg border border-white/20 bg-transparent p-4 backdrop-blur-sm">
               <div className="flex flex-col gap-3">
                 {messages.map((m) => (
                   <div

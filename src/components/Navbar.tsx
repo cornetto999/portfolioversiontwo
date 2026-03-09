@@ -75,6 +75,8 @@ const Navbar = () => {
     }
   };
 
+  const showNavbarName = activeSection !== 'home';
+
   return (
     <div
       ref={navRef}
@@ -87,7 +89,13 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <button
-            className="text-lg font-semibold tracking-tight brand-gradient"
+            className={`text-lg font-semibold tracking-tight transition-all duration-300 ${
+              showNavbarName
+                ? isScrolled
+                  ? 'brand-gradient opacity-100'
+                  : 'text-foreground opacity-100'
+                : 'pointer-events-none opacity-0'
+            }`}
             onClick={() => scrollToSection('#home')}
           >
             Francis Jake Roaya

@@ -9,10 +9,12 @@ gsap.registerPlugin(ScrollTrigger);
 
 const About = () => {
   const sectionRef = useRef<HTMLDivElement | null>(null);
-  const { languages, totalRepos, totalStars, isLoading, error } = useGitHubStats('cornetto999');
+  const { languages, totalRepos, totalStars, startYear, isLoading, error } = useGitHubStats('cornetto999');
   const prefersReducedMotion = usePrefersReducedMotion();
   useGsapCards(sectionRef, { selector: '.about-card', start: 'top 78%', stagger: 0.12, once: true });
   useGsapCards(sectionRef, { selector: '.skill-card', start: 'top 78%', stagger: 0.08, once: true });
+  const currentYear = new Date().getFullYear();
+  const yearsOfExperience = startYear ? Math.max(1, currentYear - startYear + 1) : 1;
 
   const preferredSkills = [
     'React',
@@ -154,7 +156,10 @@ const About = () => {
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="about-card glass-card glass-hover rounded-2xl p-4">
                   <div className="text-sm text-muted-foreground">Years of experience</div>
-                  <div className="mt-2 text-3xl font-semibold text-primary">1+ Years</div>
+                  <div className="mt-2 text-3xl font-semibold text-primary">{yearsOfExperience}+ Years</div>
+                  {startYear && (
+                    <div className="mt-1 text-xs text-muted-foreground">Based on GitHub activity since {startYear}</div>
+                  )}
                 </div>
                 <div className="about-card glass-card glass-hover rounded-2xl p-4">
                   <div className="text-sm text-muted-foreground">What I build</div>

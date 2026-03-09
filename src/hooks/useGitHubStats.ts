@@ -10,6 +10,7 @@ interface GitHubStats {
   languages: GitHubLanguage[];
   totalRepos: number;
   totalStars: number;
+  startYear: number | null;
   isLoading: boolean;
   error: string | null;
 }
@@ -19,6 +20,7 @@ export const useGitHubStats = (username: string) => {
     languages: [],
     totalRepos: 0,
     totalStars: 0,
+    startYear: null,
     isLoading: true,
     error: null,
   });
@@ -65,10 +67,14 @@ export const useGitHubStats = (username: string) => {
           name: string;
           stargazers_count: number;
           fork: boolean;
+          created_at: string;
         }>;
 
         const ownRepos = repos.filter((repo) => !repo.fork);
         const totalStars = ownRepos.reduce((sum, repo) => sum + repo.stargazers_count, 0);
+        const startYear = ownRepos.length
+          ? Math.min(...ownRepos.map((repo) => new Date(repo.created_at).getFullYear()))
+          : null;
 
         const languageBytes: Record<string, number> = {};
         let totalBytes = 0;
@@ -107,6 +113,7 @@ export const useGitHubStats = (username: string) => {
           languages,
           totalRepos: ownRepos.length,
           totalStars,
+          startYear,
           isLoading: false,
           error: totalBytes === 0 ? 'Language data unavailable. Repo stats loaded.' : null,
         });
@@ -117,6 +124,7 @@ export const useGitHubStats = (username: string) => {
           languages: [],
           totalRepos: 0,
           totalStars: 0,
+          startYear: null,
           isLoading: false,
           error: errorMessage,
         });
