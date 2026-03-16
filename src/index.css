@@ -419,6 +419,12 @@ body.chatbot-open .portfolio-custom-cursor {
     opacity: 0.4;
   }
 
+  .projects-carousel > .overflow-hidden {
+    overflow-x: hidden;
+    overflow-y: visible;
+    padding-bottom: 0.5rem;
+  }
+
   #tsparticles {
     position: absolute;
     width: 100%;

@@ -1,7 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { ExternalLink, Filter, Github, Info, Sparkles, X } from 'lucide-react';
+import { ExternalLink, Github, Info, Sparkles, X } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
@@ -52,9 +51,6 @@ const Projects = () => {
   const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
   const [carouselHovered, setCarouselHovered] = useState(false);
   const [carouselIndex, setCarouselIndex] = useState(0);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [activeCategory, setActiveCategory] = useState<Project['category'] | 'All'>('All');
-  const [featuredOnly, setFeaturedOnly] = useState(false);
 
   const projects: Project[] = [
     {
@@ -169,24 +165,7 @@ const Projects = () => {
     (a, b) => Number(b.featured) - Number(a.featured)
   );
 
-  const categories: Array<Project['category'] | 'All'> = [
-    'All',
-    ...Array.from(new Set(projects.map((project) => project.category))),
-  ];
-
-  const normalizedSearchTerm = searchTerm.trim().toLowerCase();
-
-  const filteredProjects = displayProjects.filter((project) => {
-    const matchesCategory = activeCategory === 'All' || project.category === activeCategory;
-    const matchesFeatured = !featuredOnly || project.featured;
-    const matchesSearch =
-      normalizedSearchTerm.length === 0 ||
-      project.title.toLowerCase().includes(normalizedSearchTerm) ||
-      project.description.toLowerCase().includes(normalizedSearchTerm) ||
-      project.technologies.some((tech) => tech.toLowerCase().includes(normalizedSearchTerm));
-
-    return matchesCategory && matchesFeatured && matchesSearch;
-  });
+  const filteredProjects = displayProjects;
 
   useLayoutEffect(() => {
     if (prefersReducedMotion) return;
@@ -236,7 +215,7 @@ const Projects = () => {
       carouselApi.scrollTo(0);
     }
     setCarouselIndex(0);
-  }, [carouselApi, filteredProjects.length, searchTerm, activeCategory, featuredOnly]);
+  }, [carouselApi, filteredProjects.length]);
 
   const handleProjectClick = (url: string) => {
     if (url && url !== '#') {
@@ -248,17 +227,6 @@ const Projects = () => {
     if (!project.liveUrl || project.liveUrl === '#') return;
     setPreviewProject(project);
     setSelectedProject(null);
-  };
-
-  const getSlideClass = (index: number) => {
-    const total = filteredProjects.length;
-    if (total === 0) return 'cover-slide';
-    let delta = (index - carouselIndex + total) % total;
-    if (delta > total / 2) delta -= total;
-    if (delta === 0) return 'cover-slide is-active';
-    if (delta === -1) return 'cover-slide is-left';
-    if (delta === 1) return 'cover-slide is-right';
-    return 'cover-slide is-far';
   };
 
   return (
@@ -276,41 +244,7 @@ const Projects = () => {
           </div>
 
           <div className="projects-reveal mt-10 rounded-3xl border border-border/60 bg-card/30 p-5 backdrop-blur-lg md:p-6">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-              <div className="flex w-full items-center gap-3 lg:max-w-md">
-                <Filter className="h-4 w-4 text-muted-foreground" />
-                <Input
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Search by project, stack, or keyword..."
-                  className="glass-input h-11 rounded-xl"
-                />
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                {categories.map((category) => (
-                  <Button
-                    key={category}
-                    size="sm"
-                    variant={activeCategory === category ? 'default' : 'outline'}
-                    className="rounded-full"
-                    onClick={() => setActiveCategory(category)}
-                  >
-                    {category}
-                  </Button>
-                ))}
-                <Button
-                  size="sm"
-                  variant={featuredOnly ? 'default' : 'outline'}
-                  className="rounded-full"
-                  onClick={() => setFeaturedOnly((prev) => !prev)}
-                >
-                  Featured only
-                </Button>
-              </div>
-            </div>
-            <p className="mt-3 text-sm text-muted-foreground">
-              Showing {filteredProjects.length} of {projects.length} projects
-            </p>
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between" />
           </div>
 
           {filteredProjects.length > 0 ? (
@@ -321,8 +255,8 @@ const Projects = () => {
             >
               <Carousel
                 setApi={setCarouselApi}
-                opts={{ loop: true, align: 'center' }}
-                className="relative"
+                opts={{ loop: true, align: 'start' }}
+                className="projects-carousel relative"
               >
                 <CarouselContent className="-ml-6">
                   {filteredProjects.map((project, index) => {
@@ -331,9 +265,9 @@ const Projects = () => {
                     return (
                     <CarouselItem
                       key={project.title}
-                      className="pl-6 md:basis-1/2 lg:basis-1/3"
+                      className="pb-2 pl-6 md:basis-1/2 lg:basis-1/3"
                     >
-                      <div className={`${getSlideClass(index)} project-card glass-card glass-hover flex h-full flex-col overflow-hidden rounded-3xl`}>
+                      <div className="project-card glass-card glass-hover flex h-full flex-col overflow-hidden rounded-3xl transition-transform duration-500">
                         <div className="relative overflow-hidden">
                           <img
                             src={project.image}
@@ -425,11 +359,7 @@ const Projects = () => {
               <Button
                 className="glass-button mt-5 rounded-full"
                 variant="outline"
-                onClick={() => {
-                  setSearchTerm('');
-                  setActiveCategory('All');
-                  setFeaturedOnly(false);
-                }}
+                onClick={() => null}
               >
                 Reset filters
               </Button>
