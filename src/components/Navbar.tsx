@@ -47,18 +47,38 @@ const Navbar = () => {
 
     if (sections.length === 0) return;
 
-    const onScroll = () => {
-      const target = window.scrollY + window.innerHeight * 0.35;
-      let current = sections[0]?.id;
-      sections.forEach((section) => {
-        if (section.offsetTop <= target) {
+    let ticking = false;
+
+    const updateActiveSection = () => {
+      const offsetY = 120;
+      const scrollPos = window.scrollY + offsetY;
+
+      if (window.scrollY < 60) {
+        setActiveSection('home');
+        ticking = false;
+        return;
+      }
+
+      let current = sections[0].id;
+      for (const section of sections) {
+        const sectionTop = section.getBoundingClientRect().top + window.scrollY;
+        if (sectionTop <= scrollPos) {
           current = section.id;
+        } else {
+          break;
         }
-      });
-      if (current) setActiveSection(current);
+      }
+      setActiveSection(current);
+      ticking = false;
     };
 
-    onScroll();
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(updateActiveSection);
+    };
+
+    updateActiveSection();
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll);
     return () => {
@@ -70,7 +90,13 @@ const Navbar = () => {
   const scrollToSection = (href: string) => {
     const element = document.querySelector(href);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      const targetId = href.replace('#', '');
+      const offset = 96;
+      const absoluteTop = element.getBoundingClientRect().top + window.scrollY;
+      const top = targetId === 'home' ? 0 : Math.max(0, absoluteTop - offset);
+
+      window.scrollTo({ top, behavior: 'smooth' });
+      setActiveSection(targetId);
       setIsMobileMenuOpen(false);
     }
   };
@@ -114,10 +140,10 @@ const Navbar = () => {
               >
                 {link.label}
                 <span
-                  className={`absolute -bottom-2 left-0 h-[2px] w-full rounded-full brand-gradient-line transition-all duration-300 ${
+                  className={`absolute -bottom-2 left-0 h-[2px] w-full origin-left rounded-full brand-gradient-line transition-all duration-500 ease-out ${
                     activeSection === link.href.replace('#', '')
-                      ? 'opacity-100'
-                      : 'opacity-0'
+                      ? 'scale-x-100 opacity-100'
+                      : 'scale-x-0 opacity-0'
                   }`}
                 />
               </button>

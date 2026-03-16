@@ -150,13 +150,13 @@ const Hero = () => {
                 Currently working on system tools
               </span>
             </div>
-            <div className="relative">
+            <div className="group relative">
               <div className="absolute -inset-6 rounded-full bg-gradient-to-br from-primary/20 via-transparent to-secondary/20 blur-2xl" />
               <div className="relative h-72 w-72 overflow-hidden rounded-full border border-border/60 bg-card/70 p-2 shadow-[0_18px_50px_-30px_rgba(0,0,0,0.8)] sm:h-80 sm:w-80">
                 <img
                   src={heroAvatar}
                   alt="Francis Jake Roaya"
-                  className="h-full w-full rounded-full object-cover"
+                  className="h-full w-full rounded-full object-cover transition duration-300 ease-out group-hover:blur-[2px]"
                   loading="lazy"
                 />
               </div>
