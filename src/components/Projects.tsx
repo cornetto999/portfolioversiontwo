@@ -26,6 +26,7 @@ import project3 from '@/assets/ytweb.jpg';
 import project4 from '@/assets/dtr.jpg';
 import project5 from '@/assets/luxera.jpg';
 import project6 from '@/assets/pos-sari.jpg';
+import convoyProject from '@/assets/convoy.jpg';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -107,6 +108,16 @@ const Projects = () => {
     },
     {
       id: 6,
+      title: 'Convoy App',
+      description: 'A group travel web app built around shared routes, live tracking, and smart alerts for safer convoy coordination.',
+      image: convoyProject,
+      technologies: ['Shared Routes', 'Live Tracking', 'Smart Alerts', 'Maps'],
+      liveUrl: 'https://convoyapp.vercel.app',
+      featured: true,
+      category: 'Web Apps',
+    },
+    {
+      id: 7,
       title: 'POS-Sari',
       description: 'A lightweight point-of-sale web app tailored for sari-sari stores, for fast sales and inventory tracking.',
       image: project6,
@@ -116,7 +127,7 @@ const Projects = () => {
       category: 'Dashboards',
     },
     {
-      id: 7,
+      id: 8,
       title: 'Inventory Management System',
       description: 'Stock tracking, reorder alerts, and supplier management in one dashboard.',
       image: '/placeholder.svg',
@@ -127,7 +138,7 @@ const Projects = () => {
       category: 'Dashboards',
     },
     {
-      id: 8,
+      id: 9,
       title: 'QR Attendance System',
       description: 'Fast QR-based attendance tracking with real-time logs and reporting.',
       image: '/placeholder.svg',
@@ -138,7 +149,7 @@ const Projects = () => {
       category: 'Web Apps',
     },
     {
-      id: 9,
+      id: 10,
       title: 'Barangay Incident Reporting System',
       description: 'Case intake, status tracking, and community incident analytics.',
       image: '/placeholder.svg',
@@ -149,7 +160,7 @@ const Projects = () => {
       category: 'UI',
     },
     {
-      id: 10,
+      id: 11,
       title: 'Car Rental Booking Tracker',
       description: 'Reservation pipeline with fleet availability and payment tracking.',
       image: '/placeholder.svg',
