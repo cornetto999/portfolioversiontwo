@@ -27,6 +27,8 @@ import project4 from '@/assets/dtr.jpg';
 import project5 from '@/assets/luxera.jpg';
 import project6 from '@/assets/pos-sari.jpg';
 import convoyProject from '@/assets/convoy.jpg';
+import barangayProject from '@/assets/barangay-ms.png';
+import inboxlyProject from '@/assets/inboxly.png';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -128,6 +130,26 @@ const Projects = () => {
     },
     {
       id: 8,
+      title: 'Municipal Management System',
+      description: 'A civic services portal for document requests, bill payments, complaints, and QR-verified municipal workflows.',
+      image: barangayProject,
+      technologies: ['React', 'TypeScript', 'Tailwind CSS', 'Vercel'],
+      liveUrl: 'https://barangay-ms-ochre.vercel.app/',
+      featured: true,
+      category: 'Web Apps',
+    },
+    {
+      id: 9,
+      title: 'Inboxly',
+      description: 'A Gmail-connected CRM for unified inbox triage, lead tracking, reminders, templates, and customer activity timelines.',
+      image: inboxlyProject,
+      technologies: ['React', 'TypeScript', 'Supabase', 'Google OAuth'],
+      liveUrl: 'https://inboxly-two.vercel.app/',
+      featured: true,
+      category: 'Web Apps',
+    },
+    {
+      id: 10,
       title: 'Inventory Management System',
       description: 'Stock tracking, reorder alerts, and supplier management in one dashboard.',
       image: '/placeholder.svg',
@@ -138,7 +160,7 @@ const Projects = () => {
       category: 'Dashboards',
     },
     {
-      id: 9,
+      id: 11,
       title: 'QR Attendance System',
       description: 'Fast QR-based attendance tracking with real-time logs and reporting.',
       image: '/placeholder.svg',
@@ -149,7 +171,7 @@ const Projects = () => {
       category: 'Web Apps',
     },
     {
-      id: 10,
+      id: 12,
       title: 'Barangay Incident Reporting System',
       description: 'Case intake, status tracking, and community incident analytics.',
       image: '/placeholder.svg',
@@ -160,7 +182,7 @@ const Projects = () => {
       category: 'UI',
     },
     {
-      id: 11,
+      id: 13,
       title: 'Car Rental Booking Tracker',
       description: 'Reservation pipeline with fleet availability and payment tracking.',
       image: '/placeholder.svg',
