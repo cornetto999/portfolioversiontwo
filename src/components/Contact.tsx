@@ -4,7 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Github, Linkedin, Mail, MessageCircle } from 'lucide-react';
+import { Facebook, Github, Linkedin, Mail, MessageCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion';
 
@@ -134,6 +134,7 @@ const Contact = () => {
 
   const socialLinks = [
     { icon: Github, href: 'https://github.com/cornetto999', label: 'GitHub' },
+    { icon: Facebook, href: 'https://www.facebook.com/francisjake.roaya/', label: 'Facebook' },
     { icon: Linkedin, href: '#', label: 'LinkedIn' },
     { icon: Mail, href: 'mailto:roayafrancisjake@gmail.com', label: 'Email' },
     { icon: MessageCircle, href: '#', label: 'WhatsApp' },

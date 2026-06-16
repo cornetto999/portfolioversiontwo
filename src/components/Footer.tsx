@@ -1,4 +1,4 @@
-import { Github, Linkedin, Mail, MessageCircle } from 'lucide-react';
+import { Facebook, Github, Linkedin, Mail, MessageCircle } from 'lucide-react';
 
 const Footer = () => {
   const links = [
@@ -12,6 +12,7 @@ const Footer = () => {
 
   const socialLinks = [
     { icon: Github, href: 'https://github.com/cornetto999', label: 'GitHub' },
+    { icon: Facebook, href: 'https://www.facebook.com/francisjake.roaya/', label: 'Facebook' },
     { icon: Linkedin, href: '#', label: 'LinkedIn' },
     { icon: Mail, href: 'mailto:roayafrancisjake@gmail.com', label: 'Email' },
     { icon: MessageCircle, href: '#', label: 'WhatsApp' },
