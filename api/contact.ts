@@ -1,7 +1,18 @@
-const DEFAULT_TO_EMAIL = "roayafrancisjake@gmail.com";
+const CONTACT_TO_EMAIL = "roayafrancisjake@gmail.com";
 const DEFAULT_FROM_EMAIL = "Portfolio Contact <onboarding@resend.dev>";
 
-export default async function handler(req: any, res: any) {
+type ContactRequest = {
+  method?: string;
+  body?: unknown;
+};
+
+type ContactResponse = {
+  status: (code: number) => {
+    json: (value: unknown) => void;
+  };
+};
+
+export default async function handler(req: ContactRequest, res: ContactResponse) {
   if (req.method !== "POST") {
     res.status(405).json({ success: false, error: "Method Not Allowed" });
     return;
@@ -13,7 +24,8 @@ export default async function handler(req: any, res: any) {
     return;
   }
 
-  const body = typeof req.body === "string" ? safeJsonParse(req.body) : req.body;
+  const parsedBody = typeof req.body === "string" ? safeJsonParse(req.body) : req.body;
+  const body = isRecord(parsedBody) ? parsedBody : {};
   const name = sanitize(body?.name);
   const email = sanitize(body?.email);
   const message = sanitize(body?.message);
@@ -23,7 +35,6 @@ export default async function handler(req: any, res: any) {
     return;
   }
 
-  const toEmail = process.env.CONTACT_TO_EMAIL || DEFAULT_TO_EMAIL;
   const fromEmail = process.env.CONTACT_FROM_EMAIL || DEFAULT_FROM_EMAIL;
 
   const text = [
@@ -53,7 +64,7 @@ export default async function handler(req: any, res: any) {
       },
       body: JSON.stringify({
         from: fromEmail,
-        to: [toEmail],
+        to: [CONTACT_TO_EMAIL],
         reply_to: email,
         subject: `Portfolio Contact: ${name}`,
         text,
@@ -76,8 +87,8 @@ export default async function handler(req: any, res: any) {
     }
 
     res.status(200).json({ success: true });
-  } catch (err: any) {
-    res.status(500).json({ success: false, error: err?.message || "Unexpected server error" });
+  } catch (err: unknown) {
+    res.status(500).json({ success: false, error: getErrorMessage(err) });
   }
 }
 
@@ -92,6 +103,15 @@ function safeJsonParse(value: string) {
 function sanitize(value: unknown) {
   if (typeof value !== "string") return "";
   return value.trim();
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function getErrorMessage(value: unknown) {
+  if (value instanceof Error && value.message) return value.message;
+  return "Unexpected server error";
 }
 
 function escapeHtml(value: string) {
